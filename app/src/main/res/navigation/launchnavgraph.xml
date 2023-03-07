@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/launchnavgraph"
+    app:startDestination="@id/launchFragment">
+
+    <fragment
+        android:id="@+id/launchFragment"
+        android:name="com.uty.travelersapp.fragments.LaunchFragment"
+        android:label="fragment_launch"
+        tools:layout="@layout/fragment_launch" >
+        <action
+            android:id="@+id/action_launchFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:enterAnim="@anim/shared_axis_enter"
+            app:exitAnim="@anim/shared_axis_exit"
+            app:popEnterAnim="@anim/shared_axis_pop_enter"
+            app:popExitAnim="@anim/shared_axis_pop_exit" />
+        <action
+            android:id="@+id/action_launchFragment_to_registerFragment"
+            app:destination="@id/registerFragment"
+            app:enterAnim="@anim/shared_axis_enter"
+            app:exitAnim="@anim/shared_axis_exit"
+            app:popEnterAnim="@anim/shared_axis_pop_enter"
+            app:popExitAnim="@anim/shared_axis_pop_exit"/>
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.uty.travelersapp.fragments.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_launchFragment"
+            app:destination="@id/launchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.uty.travelersapp.fragments.RegisterFragment"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" />
+</navigation>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menuitem_login_as_biro"
+        android:icon="@drawable/ic_outline_manage_accounts_24"
+        android:orderInCategory="100"
+        app:showAsAction="always|withText"
+        android:title="Login Biro Wisata" />
+</menu>
