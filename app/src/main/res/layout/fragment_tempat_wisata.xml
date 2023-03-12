@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.TempatWisataFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_tempat_wisata"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:liftOnScroll="true"
+        app:liftOnScrollColor="@color/toolbar_bg_lifted"
+        app:liftOnScrollTargetViewId="@id/konten_tempatwisata">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_tempat_wisata"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Tempat Wisata" />
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.search.SearchView
+        android:id="@+id/searchview_tempatwisata"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="Cari..."
+        app:layout_anchor="@id/toolbar_tempat_wisata" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/konten_tempatwisata"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_tempat_wisata"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/loading_tempatwisata"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navitem_home"
+        android:icon="@drawable/home_fill0_wght600_grad0_opsz48"
+        android:title="Home" />
+    <item
+        android:id="@+id/navitem_tempat_wisata"
+        android:icon="@drawable/distance_fill0_wght600_grad0_opsz48"
+        android:title="Tempat Wisata"/>
+    <item
+        android:id="@+id/navitem_paket_wisata"
+        android:icon="@drawable/filter_fill0_wght600_grad0_opsz48"
+        android:title="Paket Wisata"/>
+    <item
+        android:id="@+id/navitem_profil"
+        android:icon="@drawable/account_circle_fill0_wght600_grad0_opsz48"
+        android:title="Profil"
+        />
+</menu>

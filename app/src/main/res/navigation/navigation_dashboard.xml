@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_dashboard"
+    app:startDestination="@id/navitem_home">
+
+    <fragment
+        android:id="@+id/navitem_home"
+        android:name="com.uty.travelersapp.fragments.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/navitem_tempat_wisata"
+        android:name="com.uty.travelersapp.fragments.TempatWisataFragment"
+        android:label="Tempat Wisata"
+        tools:layout="@layout/fragment_tempat_wisata" />
+    <fragment
+        android:id="@+id/navitem_paket_wisata"
+        android:name="com.uty.travelersapp.fragments.PaketWisataFragment"
+        android:label="Paket Wisata"
+        tools:layout="@layout/fragment_paket_wisata" />
+    <fragment
+        android:id="@+id/navitem_profil"
+        android:name="com.uty.travelersapp.fragments.ProfilFragment"
+        android:label="fragment_profil"
+        tools:layout="@layout/fragment_profil" />
+</navigation>

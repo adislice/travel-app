@@ -1,90 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="@color/blue_bg"
-tools:context=".fragments.LaunchFragment">
-
-<com.google.android.material.appbar.AppBarLayout
-    android:id="@+id/app_bar"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:fitsSystemWindows="true"
-    android:background="@android:color/transparent"
-    app:elevation="0dp"
-    >
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    android:layout_height="match_parent"
+    android:background="@color/blue_bg"
+    tools:context=".fragments.LaunchFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:layout_collapseMode="pin"
+        android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        app:title=" "
-        />
-</com.google.android.material.appbar.AppBarLayout>
+        android:fitsSystemWindows="true"
+        app:elevation="0dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            app:layout_collapseMode="pin"
+            app:title=" " />
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_centerVertical="true"
-            android:orientation="vertical">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Traveler's"
-                android:textAlignment="center"
+                android:layout_marginBottom="20dp"
                 android:fontFamily="@font/yeseva_one"
-                android:textSize="30sp"
-                android:layout_marginBottom="20dp"/>
+                android:text="Travelio"
+                android:textAlignment="center"
+                android:textSize="30sp" />
+
             <ImageView
                 android:layout_width="300dp"
                 android:layout_height="300dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/travel_illustration"/>
+                android:src="@drawable/travel_illustration" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Selamat Datang"
-                android:gravity="center_horizontal"/>
+                android:gravity="center_horizontal"
+                android:text="Selamat Datang" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_margin="10dp"
+                android:orientation="horizontal"
                 android:weightSum="1">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_login_user"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Login"
-                    app:shapeAppearance="@style/RoundedPill"
                     android:layout_margin="5dp"
                     android:layout_weight="0.5"
-                    />
+                    android:text="Login"
+                    app:shapeAppearance="@style/RoundedPill" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_register_user"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Register"
                     android:layout_margin="5dp"
                     android:layout_weight="0.5"
+                    android:text="Register"
                     app:shapeAppearance="@style/RoundedPill"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    app:strokeColor="?attr/colorPrimary"
-                    />
+                    app:strokeColor="?attr/colorPrimary" />
             </LinearLayout>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
