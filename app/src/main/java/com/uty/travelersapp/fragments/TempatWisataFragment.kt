@@ -9,22 +9,26 @@ import android.view.inputmethod.EditorInfo
 import androidx.activity.addCallback
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
-import com.firebase.ui.database.FirebaseRecyclerOptions
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.uty.travelersapp.R
-import com.uty.travelersapp.adapters.DaftarTempatWisataAdapter
+import com.uty.travelersapp.adapters.ListTempatWisataAdapter
 import com.uty.travelersapp.databinding.FragmentTempatWisataBinding
 import com.uty.travelersapp.extensions.Helpers.Companion.makeToast
-import com.uty.travelersapp.models.TempatWisataModel
-import com.uty.travelersapp.utils.FirebaseUtils
+import com.uty.travelersapp.viewmodel.TempatWisataViewModel
 
 
 class TempatWisataFragment : Fragment() {
     private lateinit var binding: FragmentTempatWisataBinding
-    private lateinit var adapter: DaftarTempatWisataAdapter
+    private lateinit var rvTempatWisata: RecyclerView
+    private lateinit var tempatWisataViewModel: TempatWisataViewModel
+    private lateinit var tempatWisataAdapter: ListTempatWisataAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,27 +86,30 @@ class TempatWisataFragment : Fragment() {
             }
         }
 
-        val rvTempatWisata = binding.rvTempatWisata
+        val swipeView: SwipeRefreshLayout = binding.swipeRefreshTempatwisata
+        rvTempatWisata = binding.rvTempatWisata
         rvTempatWisata.layoutManager = LinearLayoutManager(requireContext())
-        val fbQuery = FirebaseUtils.firebaseDatabase.child("objekwisata")
-        val options = FirebaseRecyclerOptions.Builder<TempatWisataModel>()
-            .setQuery(fbQuery, TempatWisataModel::class.java)
-            .build()
-        adapter = DaftarTempatWisataAdapter(options)
-        rvTempatWisata.adapter = adapter
-        adapter.registerAdapterDataObserver(object : AdapterDataObserver() {
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                super.onItemRangeInserted(positionStart, itemCount)
-                binding.loadingTempatwisata.visibility = View.GONE
-                adapter.unregisterAdapterDataObserver(this)
-            }
+
+        rvTempatWisata.setHasFixedSize(true)
+        tempatWisataAdapter = ListTempatWisataAdapter()
+        rvTempatWisata.adapter = tempatWisataAdapter
+
+        tempatWisataViewModel = ViewModelProvider(this).get(TempatWisataViewModel::class.java)
+
+        tempatWisataViewModel.allTempatWisata.observe(viewLifecycleOwner, Observer {
+            tempatWisataAdapter.updateList(it)
+            binding.loadingTempatwisata.visibility = View.GONE
+            swipeView.isRefreshing = false
         })
-        adapter.startListening()
+
+
+        swipeView.setOnRefreshListener {
+            tempatWisataViewModel.getAllTempatWisata()
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        adapter.stopListening()
     }
 
 

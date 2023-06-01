@@ -9,7 +9,22 @@
         android:id="@+id/navitem_home"
         android:name="com.uty.travelersapp.fragments.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_navitem_home_to_navitem_tempat_wisata"
+            app:destination="@id/navitem_tempat_wisata"
+            app:enterAnim="@anim/shared_axis_enter"
+            app:exitAnim="@anim/shared_axis_exit"
+            app:popEnterAnim="@anim/shared_axis_pop_enter"
+            app:popExitAnim="@anim/shared_axis_pop_exit"/>
+        <action
+            android:id="@+id/action_navitem_home_to_navitem_paket_wisata"
+            app:destination="@id/navitem_paket_wisata"
+            app:enterAnim="@anim/shared_axis_enter"
+            app:exitAnim="@anim/shared_axis_exit"
+            app:popEnterAnim="@anim/shared_axis_pop_enter"
+            app:popExitAnim="@anim/shared_axis_pop_exit"/>
+    </fragment>
     <fragment
         android:id="@+id/navitem_tempat_wisata"
         android:name="com.uty.travelersapp.fragments.TempatWisataFragment"
@@ -24,5 +39,18 @@
         android:id="@+id/navitem_profil"
         android:name="com.uty.travelersapp.fragments.ProfilFragment"
         android:label="fragment_profil"
-        tools:layout="@layout/fragment_profil" />
+        tools:layout="@layout/fragment_profil" >
+        <action
+            android:id="@+id/action_navitem_profil_to_editProfileFragment"
+            app:destination="@id/editProfileFragment"
+            app:enterAnim="@anim/shared_axis_enter"
+            app:exitAnim="@anim/shared_axis_exit"
+            app:popEnterAnim="@anim/shared_axis_pop_enter"
+            app:popExitAnim="@anim/shared_axis_pop_exit"/>
+    </fragment>
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.uty.travelersapp.fragments.EditProfileFragment"
+        android:label="fragment_edit_profile"
+        tools:layout="@layout/fragment_edit_profile" />
 </navigation>

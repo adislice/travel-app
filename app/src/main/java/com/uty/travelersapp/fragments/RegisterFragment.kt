@@ -19,6 +19,8 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.firestore.FieldValue
+import com.google.firestore.v1.DocumentTransform.FieldTransform.ServerValue
 import com.uty.travelersapp.R
 import com.uty.travelersapp.databinding.FragmentRegisterBinding
 import com.uty.travelersapp.models.UserModel
@@ -107,7 +109,6 @@ class RegisterFragment : Fragment() {
 //                                    Toast.makeText(requireContext(), "sukses : ", Toast.LENGTH_LONG).show()
                                     val email = task.result.user?.email
                                     userName = binding.inputNama.editText?.text.toString().trim()
-                                    userUsername = binding.inputUsername.editText?.text.toString()
 
                                     val profileUpdate = userProfileChangeRequest {
                                         displayName = userName
@@ -219,12 +220,8 @@ class RegisterFragment : Fragment() {
     }
 
     private fun sendEmailVerification(user: FirebaseUser) {
-//        Toast.makeText(requireContext(), "masuk email verif : "+user.email, Toast.LENGTH_LONG).show()
-
-
         user.sendEmailVerification().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-//                    Toast.makeText(requireContext(), "masuk  kirim verif success: ", Toast.LENGTH_LONG).show()
                 addAccountToDB(user)
             } else {
                 Snackbar.make(
@@ -252,22 +249,27 @@ class RegisterFragment : Fragment() {
 
         val email = registeredUser.email
         val uid = registeredUser.uid
-        val userModel = UserModel(userName, email!!, userUsername)
-        firebaseDatabase.child("users").child(uid).setValue(userModel)
+//        val userModel = UserModel(userName, email!!, userUsername)
+        val userModel = mapOf(
+            "nama" to userName,
+            "email" to email!!,
+            "role" to "customer",
+            "created_at" to FieldValue.serverTimestamp()
+        )
+        firebaseDatabase.collection("users").document(uid).set(userModel)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     MaterialAlertDialogBuilder(requireContext())
                         .setTitle("Email Verifikasi Terkirim")
                         .setMessage("Kami telah mengirimkan email berisi tautan ke email Anda (${email}). Silahkan klik tautan tersebut untuk memverifikasi akun anda. Setelah akun Anda terverifikasi, Anda dapat Login untuk melanjutkan.")
-
                         .setPositiveButton("Baik") { dialog, which ->
                             dialog.dismiss()
                         }
                         .show()
-
                 }
                 enableRegisterButton()
             }
+
     }
 
     interface AddAccountCallback {

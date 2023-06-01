@@ -124,6 +124,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
                     android:hint="Password"
+                    app:passwordToggleEnabled="true"
                     app:shapeAppearance="@style/RoundedPill"
                     app:startIconDrawable="@drawable/ic_outline_vpn_key_24">
 
@@ -141,6 +142,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
                     android:hint="Konfirmasi Password"
+                    app:passwordToggleEnabled="true"
                     app:shapeAppearance="@style/RoundedPill"
                     app:startIconDrawable="@drawable/ic_outline_vpn_key_24">
 

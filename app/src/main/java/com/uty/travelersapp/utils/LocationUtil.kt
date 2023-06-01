@@ -86,6 +86,22 @@ class LocationUtil(private val context: Context) {
             }
             return ""
         }
+
+        fun getLocationAddress(context: Context, lat: Double, long: Double): Address? {
+            try {
+                val geocoder = Geocoder(context, Locale.getDefault())
+                val addresses: MutableList<Address>? = geocoder.getFromLocation(lat, long, 1)
+                if (addresses != null && addresses.size > 0){
+                    val address = addresses.first()
+                    return address
+                } else {
+                    return null
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return null
+            }
+        }
     }
 
 }

@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginBottom="20dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+<com.google.android.material.imageview.ShapeableImageView
+    android:id="@+id/list_tujuan_gambar"
+    android:layout_width="60dp"
+    android:layout_height="60dp"
+    app:shapeAppearanceOverlay="@style/RoundedSquare"
+    android:src="@drawable/hero_image_2"
+    android:scaleType="centerCrop"
+    android:layout_marginEnd="10dp" />
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/list_tujuan_order"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tujuan 1"
+        android:textAllCaps="true"
+        android:textSize="12sp"
+        />
+    <TextView
+        android:id="@+id/list_tujuan_nama_tempat_wisata"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Candi Prambanan"
+        android:textStyle="bold"
+        android:textSize="16sp"/>
+    <TextView
+        android:id="@+id/list_tujuan_alamat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tujuan 1"
+
+        />
+</LinearLayout>
+
+</LinearLayout>

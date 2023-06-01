@@ -1,41 +1,35 @@
 package com.uty.travelersapp.fragments
 
 import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.MarginPageTransformer
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.uty.travelersapp.R
 import com.uty.travelersapp.adapters.HomeCarouselWisataAdapter
 import com.uty.travelersapp.databinding.FragmentHomeBinding
-import com.uty.travelersapp.models.TempatWisataModel
+import com.uty.travelersapp.models.TempatWisataItem
 import com.uty.travelersapp.utils.FirebaseUtils.firebaseAuth
-import com.uty.travelersapp.utils.FirebaseUtils.firebaseDatabase
 import com.uty.travelersapp.utils.LocationUtil
-import java.util.Locale
+import com.uty.travelersapp.viewmodel.TempatWisataViewModel
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var dbRef: DatabaseReference
     private lateinit var tempatWisataRecyclerView: RecyclerView
-    private lateinit var tempatWisataArrayList: ArrayList<TempatWisataModel>
+    private lateinit var tempatWisataArrayList: ArrayList<TempatWisataItem>
+    private lateinit var tempatWisataViewModel: TempatWisataViewModel
+    private lateinit var tempatWisataViewPager: ViewPager2
+    private lateinit var tempatWisataCarouselAdapter: HomeCarouselWisataAdapter
 
     // lokasi
     private var gpsLoc: Location? = null
@@ -46,6 +40,8 @@ class HomeFragment : Fragment() {
     private lateinit var userCountry: String
     private lateinit var userAddress: String
     private val locationPermissionCode = 2
+    private var doubleBackExitPressedOnce = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,6 +63,8 @@ class HomeFragment : Fragment() {
             requireActivity().window,
             requireActivity().window.decorView
         )
+        windowInsetsController.isAppearanceLightStatusBars = false
+
 //        windowInsetsController?.isAppearanceLightStatusBars = false
 
         binding.appbarHome.addLiftOnScrollListener { elevation, backgroundColor ->
@@ -84,7 +82,13 @@ class HomeFragment : Fragment() {
             }
         }
 
-        binding.viewpagerHomeCarousel.apply {
+        binding.btnLihatsemuaTempatwisata.setOnClickListener {
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+            bottomNav.selectedItemId = R.id.navitem_tempat_wisata
+        }
+
+        tempatWisataViewPager = binding.viewpagerHomeCarousel
+        tempatWisataViewPager.apply {
             offscreenPageLimit = 3
             setPageTransformer(MarginPageTransformer(1))
             clipChildren = false  // No clipping the left and right items
@@ -92,7 +96,9 @@ class HomeFragment : Fragment() {
             (getChildAt(0) as RecyclerView).overScrollMode = RecyclerView.OVER_SCROLL_NEVER
         }
 
-        tempatWisataArrayList = arrayListOf<TempatWisataModel>()
+        tempatWisataArrayList = arrayListOf()
+        tempatWisataCarouselAdapter = HomeCarouselWisataAdapter(tempatWisataArrayList)
+        tempatWisataViewPager.adapter = tempatWisataCarouselAdapter
 
         startLocationPermissionRequest()
         val fUser = firebaseAuth.currentUser
@@ -102,86 +108,24 @@ class HomeFragment : Fragment() {
             }
         }
 
-        getTempatWisataData()
+        tempatWisataViewModel = ViewModelProvider(requireActivity()).get(TempatWisataViewModel::class.java)
 
-    }
-
-    fun getTempatWisataData() {
-        firebaseDatabase.child("objekwisata").limitToLast(4)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        snapshot.children.forEach { tempatWisataSnapshot ->
-                            val wisata =
-                                tempatWisataSnapshot.getValue(TempatWisataModel::class.java)
-                            tempatWisataArrayList.add(wisata!!)
-                        }
-                        binding.viewpagerHomeCarousel.adapter =
-                            HomeCarouselWisataAdapter(tempatWisataArrayList)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.d("firebase", "Error : " + error.message)
-
-//                    context?.makeToast("error: "+error.message)
-                }
-
-            })
-    }
-
-    fun getUserLocation() {
-
-        var locationManager =
-            requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-
-            return
-        }
-        try {
-            gpsLoc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)!!
-            networkLoc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)!!
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        if (gpsLoc != null) {
-            finalLoc = gpsLoc
-            latitude = finalLoc!!.latitude
-            longitude = finalLoc!!.longitude
-        } else if (networkLoc != null) {
-            finalLoc = networkLoc
-            latitude = finalLoc!!.latitude
-            longitude = finalLoc!!.longitude
-        } else {
-            latitude = 0.0
-            longitude = 0.0
-        }
-
-//        requireContext().makeToast("nyampe try geocoder")
-
-
-        try {
-            val geocoder = Geocoder(requireContext(), Locale.getDefault())
-            val addresses: MutableList<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
-            if (addresses != null && addresses.size > 0) {
-                userCountry = addresses.elementAt(0).countryName
-                userAddress = addresses.elementAt(0).locality
-                binding.txtLocationName.text = userAddress
-//                requireContext().makeToast("lokasi: "+userAddress)
+        tempatWisataViewModel.allTempatWisata.observe(requireActivity(), Observer { twList ->
+            tempatWisataArrayList.clear()
+            for (item in twList) {
+                tempatWisataArrayList.add(item)
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+            tempatWisataCarouselAdapter.notifyDataSetChanged()
+
+        })
+
+
+
+
     }
+
+
+
 
     val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -207,6 +151,7 @@ class HomeFragment : Fragment() {
         val addres = locationUtil.getUserAddress()
         if (addres != null) {
             binding.txtLocationName.text = addres.locality
+            binding.imgLocationIcon.visibility = View.VISIBLE
         }
     }
 

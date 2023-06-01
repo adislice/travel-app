@@ -8,13 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.uty.travelersapp.DetailTempatWisataActivity
-import com.uty.travelersapp.models.TempatWisataModel
 import com.uty.travelersapp.R
+import com.uty.travelersapp.models.TempatWisataItem
 
-class HomeCarouselWisataAdapter(val tempatWisataList: ArrayList<TempatWisataModel>) :
+class HomeCarouselWisataAdapter(val tempatWisataList: ArrayList<TempatWisataItem>) :
     RecyclerView.Adapter<HomeCarouselWisataAdapter.HomeCarouselViewHolder>() {
 
 //    private val newList: ArrayList<TempatWisataModel> = (arrayListOf(tempatWisataList.last()) + tempatWisataList + arrayListOf(tempatWisataList.first())) as ArrayList<TempatWisataModel>
@@ -31,7 +29,7 @@ class HomeCarouselWisataAdapter(val tempatWisataList: ArrayList<TempatWisataMode
 
     override fun onBindViewHolder(holder: HomeCarouselViewHolder, position: Int) {
         val currentItem = tempatWisataList[position]
-        val gambar = currentItem.gambar
+        val gambar = currentItem.thumbnail_foto
         holder.nama.text = currentItem.nama
         Glide.with(holder.itemView.context)
             .load(gambar)

@@ -1,4 +1,8 @@
 package com.uty.travelersapp.models
 
-class FotoModel {
-}
+import java.io.Serializable
+
+data class FotoModel (
+    val nama: String = "",
+    val url: String = ""
+): Serializable

@@ -22,14 +22,18 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="400dp">
+                android:layout_height="250dp">
 
-                <ImageView
+<!--                <ImageView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:scaleType="centerCrop"-->
+
+<!--                    android:src="@drawable/hero_image_2" />-->
+                <View
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-
-                    android:src="@drawable/hero_image_2" />
+                    android:background="@color/md_theme_light_primary"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -43,7 +47,6 @@
                     android:paddingHorizontal="20dp">
 
                     <TextView
-
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:shadowColor="#C83A3737"
@@ -58,14 +61,28 @@
                         android:text=""
                         android:textColor="#F1FAFAFA"
                         android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/txt_location_name"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text=""
-                        android:textColor="#F1FAFAFA"
-                        android:textSize="16sp" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        <ImageView
+                            android:id="@+id/img_location_icon"
+                            android:layout_width="16dp"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/baseline_location_on_24"
+                            app:tint="#D9E5E5E5"
+                            android:visibility="gone"/>
+                        <TextView
+                            android:id="@+id/txt_location_name"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:layout_weight="1"
+                            android:textColor="#F1FAFAFA"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
                 </LinearLayout>
             </RelativeLayout>
 
@@ -96,6 +113,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textSize="18sp"
                     android:text="Tempat Wisata"
                     android:textStyle="bold" />
 
@@ -105,7 +123,10 @@
                     android:layout_height="30dp"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:text="Lihat semua" />
+                    android:text="Lihat semua"
+                    android:id="@+id/btn_lihatsemua_tempatwisata"
+                    app:icon="@drawable/baseline_chevron_right_24"
+                    app:iconGravity="textEnd"/>
 
             </LinearLayout>
 

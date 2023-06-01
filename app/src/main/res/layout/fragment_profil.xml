@@ -13,7 +13,7 @@
         android:fitsSystemWindows="true"
         app:liftOnScroll="true"
         app:liftOnScrollColor="@color/toolbar_bg_lifted"
-        app:liftOnScrollTargetViewId="@id/konten_tempatwisata">
+        app:liftOnScrollTargetViewId="@id/konten_profil">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar_profil"
@@ -30,15 +30,180 @@
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_logout_user"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_margin="20dp"
-            android:text="Logout"
-            app:icon="@drawable/logout_fill0_wght600_grad0_opsz48"
-            app:iconGravity="textStart" />
+
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="30dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/img_profil"
+                        android:layout_width="130dp"
+                        android:layout_height="130dp"
+                        app:shapeAppearanceOverlay="@style/RoundedPill"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_profile_pic_placeholder"
+                        app:tint="?attr/colorOnSurfaceVariant"
+                        android:background="#CCCCCC"
+                        app:layout_constraintDimensionRatio="H,1:1"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_marginBottom="10dp"/>
+                    <TextView
+                        android:textAlignment="center"
+                        android:id="@+id/txt_profil_nama"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="[nama]"
+                        android:layout_marginBottom="5dp"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        style="@style/TextAppearance.Material3.TitleLarge"/>
+                    <TextView
+                        android:textAlignment="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txt_profil_email"
+                        android:text="[email]"/>
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="5dp"
+                android:clickable="true"
+                android:focusable="true"
+
+                android:id="@+id/btn_ubah_profil"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    android:orientation="horizontal"
+                    >
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_margin="8dp"
+                        app:tint="?attr/colorOnSurfaceVariant"
+                        android:src="@drawable/ic_outline_person_outline_24"
+                        />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingVertical="8dp"
+                        android:layout_weight="1"
+                        android:paddingHorizontal="10dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceListItem"
+                            android:text="Ubah Profil"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Ubah nama, foto profile, nomor telepon"/>
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_margin="8dp"
+                        app:tint="?attr/colorOnSurfaceVariant"
+                        android:src="@drawable/baseline_chevron_right_24"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                >
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_margin="8dp"
+                    app:tint="?attr/colorOnSurfaceVariant"
+                    android:src="@drawable/ic_outline_vpn_key_24"
+                    />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1"
+                    android:paddingVertical="8dp"
+                    android:paddingHorizontal="10dp">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceListItem"
+                        android:text="Ubah Password"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="Ubah password akun"/>
+                </LinearLayout>
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_margin="8dp"
+                    app:tint="?attr/colorOnSurfaceVariant"
+                    android:src="@drawable/baseline_chevron_right_24"/>
+            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_logout_user"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_margin="20dp"
+                android:text="Logout"
+                app:icon="@drawable/logout_fill0_wght600_grad0_opsz48"
+                app:iconGravity="textStart" />
+
+        </LinearLayout>
+
+
 
 
     </androidx.core.widget.NestedScrollView>

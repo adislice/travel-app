@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".PemesananPaketWisataActivity">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar_pemesanan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            app:liftOnScroll="false"
+            android:background="@color/toolbar_bg_lifted"
+            >
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar_pemesanan"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="Pesan Paket Wisata" />
+
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <com.google.android.material.search.SearchView
+            android:id="@+id/searchview_pemesanan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Cari..."
+            app:layout_anchor="@id/toolbar_pemesanan" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/konten_pemesanan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_pesan_nama"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Nama"
+                    app:startIconDrawable="@drawable/ic_outline_person_outline_24"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_pesan_no_telp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="No. Telepon/WA Yang Dapat Dihubungi"
+                    app:startIconDrawable="@drawable/outline_phone_24"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_pesan_catatan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Catatan Penjemputan (patokan/ancer-ancer) "
+
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:gravity="top"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>

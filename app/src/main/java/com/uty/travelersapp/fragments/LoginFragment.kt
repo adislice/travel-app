@@ -15,20 +15,21 @@ import com.google.android.material.progressindicator.IndeterminateDrawable
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.userProfileChangeRequest
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.ktx.toObject
 import com.uty.travelersapp.DashboardActivity
 import com.uty.travelersapp.R
 import com.uty.travelersapp.databinding.FragmentLoginBinding
+import com.uty.travelersapp.extensions.Helpers.Companion.saveUserPref
 import com.uty.travelersapp.extensions.Helpers.Companion.snackbarDismiss
 import com.uty.travelersapp.models.UserModel
 import com.uty.travelersapp.utils.FirebaseUtils.firebaseAuth
 import com.uty.travelersapp.utils.FirebaseUtils.firebaseDatabase
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 
 class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
-    private lateinit var loginUsername: String
+    private lateinit var loginEmail: String
     private lateinit var loginPassword: String
     private lateinit var loginInputsArray: Array<TextInputLayout>
     private lateinit var originalText: CharSequence
@@ -59,7 +60,7 @@ class LoginFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        loginInputsArray = arrayOf(binding.inputLoginUsername, binding.inputLoginPassword)
+        loginInputsArray = arrayOf(binding.inputLoginEmail, binding.inputLoginPassword)
 
         binding.btnLoginGaskan.setOnClickListener {
             login()
@@ -67,7 +68,7 @@ class LoginFragment : Fragment() {
     }
 
     fun login() {
-        loginUsername = binding.inputLoginUsername.editText?.text.toString()
+        loginEmail = binding.inputLoginEmail.editText?.text.toString()
         loginPassword = binding.inputLoginPassword.editText?.text.toString()
 
         val spec = CircularProgressIndicatorSpec(
@@ -86,75 +87,71 @@ class LoginFragment : Fragment() {
                 isEnabled = false
                 text = "Sedang login..."
             }
-            getEmailFromDB { userDb ->
-                if (userDb != null) {
-                    userDb.email?.let { email ->
-                        firebaseAuth.signInWithEmailAndPassword(email, loginPassword)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    if (!task.result.user!!.isEmailVerified) {
-                                        snackbarDismiss(
-                                            "Akun belum terverifikasi. Silahkan cek email Anda dan klik tautan verifikasi.",
-                                            binding.btnLoginGaskan
-                                        )
-                                        binding.btnLoginGaskan.apply {
-                                            icon = null
-                                            isEnabled = true
-                                            text = originalText
-                                        }
-                                    } else {
-                                        Snackbar.make(
-                                            binding.btnLoginGaskan,
-                                            "Login berhasil " + task.result.user?.email,
-                                            Snackbar.LENGTH_LONG
-                                        ).show()
-                                        val profileUpdate = userProfileChangeRequest {
-                                            displayName = userDb.nama?.trim()
-                                        }
-                                        task.result.user!!.updateProfile(profileUpdate)
-                                            .addOnCompleteListener { updateProfileTask ->
-                                                if (updateProfileTask.isSuccessful) {
-                                                    Log.d("firebase", "User profile updated")
-                                                }
-                                                startActivity(
-                                                    Intent(
-                                                        requireActivity(),
-                                                        DashboardActivity::class.java
-                                                    )
-                                                )
-                                                binding.btnLoginGaskan.apply {
-                                                    icon = null
-                                                    isEnabled = true
-                                                    text = originalText
-                                                }
-                                                requireActivity().finish()
-                                            }
-                                    }
-                                } else {
-                                    snackbarDismiss(
-                                        "Login Gagal. Silahkan cek kembali username dan password!",
-                                        binding.root
-                                    )
-                                    binding.btnLoginGaskan.apply {
-                                        icon = null
-                                        isEnabled = true
-                                        text = originalText
-                                    }
-                                }
-                            }
-                    }
 
-                } else {
-                    snackbarDismiss(
-                        "Login Gagal. Silahkan cek kembali username dan password!", binding.root
-                    )
-                    binding.btnLoginGaskan.apply {
-                        icon = null
-                        isEnabled = true
-                        text = originalText
+            firebaseAuth.signInWithEmailAndPassword(loginEmail, loginPassword)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        if (!task.result.user!!.isEmailVerified) {
+                            snackbarDismiss(
+                                "Akun belum terverifikasi. Silahkan cek email Anda dan klik tautan verifikasi.",
+                                binding.btnLoginGaskan
+                            )
+                            binding.btnLoginGaskan.apply {
+                                icon = null
+                                isEnabled = true
+                                text = originalText
+                            }
+                        } else {
+                            setEmailVerified(task.result.user!!.uid, true)
+                            var userDb:UserModel? = null
+                            runBlocking {
+                                var result = getUserDetail()
+                                userDb = result
+                            }
+                            Snackbar.make(
+                                binding.btnLoginGaskan,
+                                "Login berhasil " + task.result.user?.email,
+                                Snackbar.LENGTH_LONG
+                            ).show()
+//                            val profileUpdate = userProfileChangeRequest {
+//                                displayName = userDb!!.nama?.trim()
+//                            }
+                            val intent = Intent(requireActivity(), DashboardActivity::class.java)
+                            startActivity(intent)
+                            requireContext().saveUserPref(userDb!!)
+                            binding.btnLoginGaskan.apply {
+                                icon = null
+                                isEnabled = true
+                                text = originalText
+                            }
+                            requireActivity().finish()
+//                            task.result.user!!.updateProfile(profileUpdate)
+//                                .addOnCompleteListener { updateProfileTask ->
+//                                    if (updateProfileTask.isSuccessful) {
+//                                        Log.d("firebase", "User profile updated")
+//                                    }
+//                                    val intent = Intent(
+//                                        requireActivity(),
+//                                        DashboardActivity::class.java
+//                                    )
+////                                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+//
+//                                }
+                        }
+                    } else {
+                        snackbarDismiss(
+                            "Login Gagal. Silahkan cek kembali username dan password!",
+                            binding.root
+                        )
+                        binding.btnLoginGaskan.apply {
+                            icon = null
+                            isEnabled = true
+                            text = originalText
+                        }
                     }
                 }
-            }
+
+
         }
     }
 
@@ -184,25 +181,22 @@ class LoginFragment : Fragment() {
         val nama: String, val email: String, val username: String
     )
 
-    fun getEmailFromDB(callback: (UserModel?) -> Unit) {
-        firebaseDatabase.child("users").orderByChild("username").equalTo(loginUsername)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        val user = snapshot.children.first().getValue(UserModel::class.java)
-                        val email =
-                            snapshot.children.first().child("email").getValue(String::class.java)!!
-                        val nama = snapshot.children.first()
-                        callback(user)
+    suspend fun getUserDetail(): UserModel? {
+        val user =
+            firebaseDatabase.collection("users").whereEqualTo("email", loginEmail).get()
+                .await()
+        return if (user.documents.isNotEmpty()) {
+            user.documents.first().toObject<UserModel>()
+        } else {
+            null
+        }
+    }
 
-                    } else {
-                        callback(null)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    callback(null)
-                }
-            })
+    fun setEmailVerified(uid: String, verified: Boolean) {
+        firebaseDatabase.collection("users").document(uid).update(
+            mapOf(
+                "verified" to verified
+            )
+        )
     }
 }

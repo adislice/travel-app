@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:fontFamily="@font/yeseva_one"
-                android:text="Travelio"
+                android:text="@string/app_name"
                 android:textAlignment="center"
                 android:textSize="30sp" />
 

@@ -13,7 +13,7 @@
         android:fitsSystemWindows="true"
         app:liftOnScroll="true"
         app:liftOnScrollColor="@color/toolbar_bg_lifted"
-        app:liftOnScrollTargetViewId="@id/konten_tempatwisata">
+        app:liftOnScrollTargetViewId="@id/rv_tempat_wisata">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar_tempat_wisata"
@@ -31,8 +31,8 @@
         android:hint="Cari..."
         app:layout_anchor="@id/toolbar_tempat_wisata" />
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/konten_tempatwisata"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_tempatwisata"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
@@ -40,8 +40,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_tempat_wisata"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </androidx.core.widget.NestedScrollView>
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/loading_tempatwisata"
