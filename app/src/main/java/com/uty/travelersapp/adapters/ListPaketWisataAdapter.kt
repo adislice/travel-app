@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.uty.travelersapp.DetailPaketWisataActivity
+import com.uty.travelersapp.PaketWisataBaseActivity
 import com.uty.travelersapp.R
 import com.uty.travelersapp.models.PaketWisataItem
 import com.uty.travelersapp.models.TempatWisataItem
@@ -35,7 +36,7 @@ class ListPaketWisataAdapter: RecyclerView.Adapter<ListPaketWisataAdapter.ListPa
     override fun onBindViewHolder(holder: ListPaketWisataViewHolder, position: Int) {
         val model = paketWisataList[position]
         holder.container.setOnClickListener {
-            val intent = Intent(holder.itemView.context, DetailPaketWisataActivity::class.java)
+            val intent = Intent(holder.itemView.context, PaketWisataBaseActivity::class.java)
             intent.putExtra("DETAIL_PAKETWISATA", model)
             holder.itemView.context.startActivity(intent)
         }

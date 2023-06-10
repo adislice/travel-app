@@ -1,6 +1,9 @@
 package com.uty.travelersapp
 
+import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.util.TypedValue
 import androidx.appcompat.app.AppCompatActivity
@@ -92,43 +95,24 @@ class DetailTempatWisataActivity : AppCompatActivity(), OnMapReadyCallback {
         toolbar.setNavigationOnClickListener {
             finish()
         }
-//        setSupportActionBar(toolbar)
-//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        var typedVal = TypedValue()
-        this.theme.resolveAttribute(
-            com.google.android.material.R.attr.colorOnSurfaceVariant, typedVal, true
-        )
-        val col = typedVal.data
         val appBarLayout = findViewById<AppBarLayout>(R.id.appbar_layout_detailwisata)
-        val collapsedColor = ContextCompat.getDrawable(
-            applicationContext, com.google.android.material.R.drawable.abc_ic_ab_back_material
-        )
-        collapsedColor?.setColorFilter(col, PorterDuff.Mode.SRC_ATOP)
-        val expandedColor = ContextCompat.getDrawable(
-            applicationContext, com.google.android.material.R.drawable.abc_ic_ab_back_material
-        )
-        expandedColor?.setColorFilter(
-            ContextCompat.getColor(this, R.color.white), PorterDuff.Mode.SRC_ATOP
-        )
-        toolbar.navigationIcon = expandedColor
-        val expandedTitle = ""
-        var isShow = true
+
+        toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.baseline_arrow_back_24)
         var scrollRange = -1
 
         appBarLayout.addOnOffsetChangedListener { barLayout, verticalOffset ->
-//            val colo = toolbar.background as Drawable
-//            txtCount.text = (colo as ColorDrawable).color.toString()
             if (scrollRange == -1) {
                 scrollRange = barLayout?.totalScrollRange!!
             }
-            if (scrollRange + verticalOffset <= 90) {
-                isShow = true
-                toolbar.navigationIcon = collapsedColor
-                windowInsetsController.isAppearanceLightStatusBars = true
-            } else if (isShow) {
+            var koma = ( (verticalOffset * -1) / scrollRange.toDouble() )
+            var percent:Double = koma * 100
+            binding.tvCheck.text = percent.toInt().toString()
+            if (percent <= 86) {
                 windowInsetsController.isAppearanceLightStatusBars = false
-                toolbar.navigationIcon = expandedColor
-                isShow = false
+                toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.baseline_arrow_back_24_white)
+            } else {
+                toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.baseline_arrow_back_24)
+                windowInsetsController.isAppearanceLightStatusBars = true
             }
         }
     }

@@ -14,6 +14,12 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -23,14 +29,34 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         tools:targetApi="31">
+
+        <!--
+             TODO: Before you run your application, you need a Google Maps API key.
+
+             To get one, follow the directions here:
+
+                https://developers.google.com/maps/documentation/android-sdk/get-api-key
+
+             Once you have your API key (it starts with "AIza"), define a new property in your
+             project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
+             "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAr4xlzzVJARvrYjj-qE00fNqMv4D-LY-U" />
+
+        <activity
+            android:name=".PaketWisataBaseActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TravelersApp.LightStatusBar" />
         <activity
             android:name=".PemesananPaketWisataActivity"
             android:exported="false"
-            android:theme="@style/Theme.TravelersApp.LightStatusBar"/>
+            android:theme="@style/Theme.TravelersApp.LightStatusBar" />
         <activity
             android:name=".DetailPaketWisataActivity"
             android:exported="false"
-            android:theme="@style/Theme.TravelersApp"></activity>
+            android:theme="@style/Theme.TravelersApp" />
         <activity
             android:name=".DetailTempatWisataActivity"
             android:exported="false"
@@ -83,9 +109,6 @@
         </activity>
 
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAr4xlzzVJARvrYjj-qE00fNqMv4D-LY-U" />
-        <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
@@ -96,14 +119,8 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
-
     </application>
-    <queries>
-        <intent>
-            <action android:name="android.media.action.IMAGE_CAPTURE" />
-        </intent>
-    </queries>
 
 </manifest>

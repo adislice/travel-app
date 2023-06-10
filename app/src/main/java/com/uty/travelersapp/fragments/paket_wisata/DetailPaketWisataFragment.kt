@@ -1,59 +1,76 @@
-package com.uty.travelersapp
+package com.uty.travelersapp.fragments.paket_wisata
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.Marker
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
+import com.uty.travelersapp.R
 import com.uty.travelersapp.adapters.ListTujuanWisataAdapter
-import com.uty.travelersapp.databinding.ActivityDetailPaketWisataBinding
+import com.uty.travelersapp.databinding.FragmentDetailPaketWisataBinding
 import com.uty.travelersapp.fragments.PemesananBottomSheet
 import com.uty.travelersapp.models.PaketWisataItem
 import com.uty.travelersapp.repository.PaketWisataRepository
 import com.uty.travelersapp.viewmodel.PaketWisataViewModel
 
-
-class DetailPaketWisataActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityDetailPaketWisataBinding
+class DetailPaketWisataFragment : Fragment() {
+    private var _binding: FragmentDetailPaketWisataBinding? = null
+    private val binding get() = _binding!!
     private lateinit var rvTujuanWisata: RecyclerView
     private lateinit var tujuanWisataAdapter: ListTujuanWisataAdapter
     private lateinit var pwRepository: PaketWisataRepository
-//    private lateinit var paketWisataViewModel: PaketWisataViewModel
-    private lateinit var googleMap: GoogleMap
-    private lateinit var markerList: ArrayList<Marker>
-    private lateinit var mapFragment: SupportMapFragment
-    private val paketWisataViewModel by viewModels<PaketWisataViewModel>()
+    private val paketWisataViewModel by activityViewModels<PaketWisataViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityDetailPaketWisataBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
-//        if (savedInstanceState != null) {
-//            mapFragment = (supportFragmentManager.findFragmentByTag("map") as SupportMapFragment?)!!
-//        } else {
-//            mapFragment = SupportMapFragment.newInstance()
-//            val mapTransaction = supportFragmentManager.beginTransaction()
-//            mapTransaction.addToBackStack("map").add(R.id.map_tujuan_wisata_1, mapFragment, "map").commit()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentDetailPaketWisataBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val id = activity?.intent?.getStringExtra("PAKET_WISATA_ID")
+//        val txtCoba = view.findViewById<TextView>(R.id.txt_test_coba)
+//        txtCoba.text = id
+//        val btn = view.findViewById<Button>(R.id.btn_ke_dua)
+//        btn.setOnClickListener {
+//            findNavController().navigate(R.id.action_detailPaketWisataFragment_to_pesanPaketWisataFragment)
 //        }
+
         initializeLayout()
 
-//        mapFragment = supportFragmentManager
-//            .findFragmentById(R.id.map_tujuan_wisata_1) as SupportMapFragment
+        val llBawah = binding.bottomBar
+        ViewCompat.setOnApplyWindowInsetsListener(llBawah) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-//        mapFragment.getMapAsync(this)
-//        markerList = ArrayList()
+            val mlp = view.layoutParams as MarginLayoutParams
+            mlp.bottomMargin = insets.bottom
+            view.layoutParams = mlp
 
-        val detailPaketWisata = intent.getSerializableExtra("DETAIL_PAKETWISATA") as PaketWisataItem
+            WindowInsetsCompat.CONSUMED
+        }
+
+        val detailPaketWisata = activity?.intent?.getSerializableExtra("DETAIL_PAKETWISATA") as PaketWisataItem
         detailPaketWisata?.let { pw ->
 
             binding.txtDetailPaketNama.text = pw.nama
@@ -68,7 +85,7 @@ class DetailPaketWisataActivity : AppCompatActivity() {
 
             val idPaket = pw.id!!
             rvTujuanWisata = binding.rvTujuanWisata
-            rvTujuanWisata.layoutManager = LinearLayoutManager(this)
+            rvTujuanWisata.layoutManager = LinearLayoutManager(requireActivity())
             rvTujuanWisata.setHasFixedSize(true)
             tujuanWisataAdapter = ListTujuanWisataAdapter()
             rvTujuanWisata.adapter = tujuanWisataAdapter
@@ -76,7 +93,7 @@ class DetailPaketWisataActivity : AppCompatActivity() {
 //            paketWisataViewModel = ViewModelProvider(this).get(PaketWisataViewModel::class.java)
             paketWisataViewModel.getTujuanWisata(pw.tempat_wisata!!)
 
-            paketWisataViewModel.tujuanWisata.observe(this, Observer { li ->
+            paketWisataViewModel.tujuanWisata.observe(requireActivity(), Observer { li ->
                 var sortedList = li.sortedWith(compareBy { it.order })
                 tujuanWisataAdapter.updateList(sortedList)
 //
@@ -115,49 +132,24 @@ class DetailPaketWisataActivity : AppCompatActivity() {
                 args.putString("PAKET_WISATA_ID", pw.id!!)
                 bottomSheet.arguments = args
 
-                bottomSheet.show(supportFragmentManager, PemesananBottomSheet.TAG)
+                bottomSheet.show(childFragmentManager, PemesananBottomSheet.TAG)
+//                findNavController().navigate(R.id.action_detailPaketWisataFragment_to_pemesananBottomSheet, args)
             }
 
         }
-
-//        val appBarLayout = findViewById<AppBarLayout>(R.id.appbar_layout_detailpaket)
-//        appBarLayout.addLiftOnScrollListener { elevation, backgroundColor ->
-//
-//            binding.tvCheck.text = "state : " + elevation.toString()
-//        }
-
     }
 
-//    override fun onMapReady(googleMap: GoogleMap) {
-//        this.googleMap = googleMap
-//    }
-
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        val manager: FragmentManager = supportFragmentManager
-//        val trans: FragmentTransaction = manager.beginTransaction()
-//        trans.remove(mapFragment)
-//        try {
-//            if (trans != null && mapFragment != null) {
-//                trans.commit()
-//            }
-//        } catch (e: Exception) {
-//
-//        }
-//    }
-
     fun initializeLayout() {
-        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        val windowInsetsController = WindowCompat.getInsetsController(requireActivity().window, requireActivity().window.decorView)
 
-
-        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar_detailpaket)
-        toolbar.setNavigationOnClickListener {
-            finish()
+        val toolbar = binding.toolbarDetailpaket
+        toolbar?.setNavigationOnClickListener {
+//            finish()
         }
 
-        val appBarLayout = findViewById<AppBarLayout>(R.id.appbar_layout_detailpaket)
+        val appBarLayout = binding.appbarLayoutDetailpaket
 
-        toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.baseline_arrow_back_24_white)
+        toolbar.navigationIcon = ContextCompat.getDrawable(requireActivity(), R.drawable.baseline_arrow_back_24_white)
         var isShow = true
         var scrollRange = -1
 
@@ -171,12 +163,12 @@ class DetailPaketWisataActivity : AppCompatActivity() {
             binding.tvCheck.text = "state : " + percent.toInt().toString()
             if (percent.toInt() <= 86) {
                 windowInsetsController.isAppearanceLightStatusBars = false
-                toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.baseline_arrow_back_24_white)
+                toolbar.navigationIcon = ContextCompat.getDrawable(requireActivity(), R.drawable.baseline_arrow_back_24_white)
                 isShow = false
 
             } else {
                 isShow = true
-                toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.baseline_arrow_back_24)
+                toolbar.navigationIcon = ContextCompat.getDrawable(requireActivity(), R.drawable.baseline_arrow_back_24)
                 windowInsetsController.isAppearanceLightStatusBars = true
             }
         }

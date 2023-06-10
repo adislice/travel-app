@@ -201,6 +201,13 @@
                         />
 
                 </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="2dp"
+                    android:textColor="@android:color/transparent"
+                    android:id="@+id/tv_check"
+                    android:text="state"
+                    />
 
 
             </LinearLayout>

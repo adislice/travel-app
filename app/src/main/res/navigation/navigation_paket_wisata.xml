@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_paket_wisata"
+    app:startDestination="@id/detailPaketWisataFragment">
+
+    <fragment
+        android:id="@+id/detailPaketWisataFragment"
+        android:name="com.uty.travelersapp.fragments.paket_wisata.DetailPaketWisataFragment"
+        android:label="fragment_detail_paket_wisata"
+        tools:layout="@layout/fragment_detail_paket_wisata" >
+        <action
+            android:id="@+id/action_detailPaketWisataFragment_to_pesanPaketWisataFragment"
+            app:destination="@id/pesanPaketWisataFragment"
+            app:enterAnim="@anim/slide_enter"
+            app:exitAnim="@anim/slide_exit"
+            app:popEnterAnim="@anim/slide_pop_enter"
+            app:popExitAnim="@anim/slide_pop_exit"/>
+        <action
+            android:id="@+id/action_detailPaketWisataFragment_to_pemesananBottomSheet"
+            app:destination="@id/pemesananBottomSheet" />
+    </fragment>
+    <fragment
+        android:id="@+id/pesanPaketWisataFragment"
+        android:name="com.uty.travelersapp.fragments.paket_wisata.PesanPaketWisataFragment"
+        android:label="fragment_pesan_paket_wisata"
+        tools:layout="@layout/fragment_pesan_paket_wisata" >
+        <action
+            android:id="@+id/action_pesanPaketWisataFragment_to_locationPickerFragment"
+            app:destination="@id/locationPickerFragment"
+            app:enterAnim="@anim/slide_enter"
+            app:exitAnim="@anim/slide_exit"
+            app:popEnterAnim="@anim/slide_pop_enter"
+            app:popExitAnim="@anim/slide_pop_exit"/>
+    </fragment>
+    <dialog
+        android:id="@+id/pemesananBottomSheet"
+        android:name="com.uty.travelersapp.fragments.PemesananBottomSheet"
+        android:label="PemesananBottomSheet" >
+        <action
+            android:id="@+id/action_pemesananBottomSheet_to_pesanPaketWisataFragment"
+            app:destination="@id/pesanPaketWisataFragment"
+            app:enterAnim="@anim/slide_enter"
+            app:exitAnim="@anim/slide_exit"
+            app:popEnterAnim="@anim/slide_pop_enter"
+            app:popExitAnim="@anim/slide_pop_exit"/>
+    </dialog>
+    <fragment
+        android:id="@+id/locationPickerFragment"
+        android:name="com.uty.travelersapp.fragments.LocationPickerFragment"
+        android:label="fragment_location_picker"
+        tools:layout="@layout/fragment_location_picker" />
+</navigation>

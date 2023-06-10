@@ -16,12 +16,15 @@ import com.uty.travelersapp.utils.FirebaseUtils.firebaseAuth
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 //        installSplashScreen()
         val currUser: FirebaseUser? = firebaseAuth.currentUser
         currUser?.let {
             if (currUser.isEmailVerified) {
+
                 val i = Intent(this, DashboardActivity::class.java)
 //                i.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(i)
@@ -44,6 +47,7 @@ class MainActivity : AppCompatActivity() {
 //        val windowInsetsController = window?.let { ViewCompat.getWindowInsetsController(it.decorView) }
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.isAppearanceLightStatusBars = true
+        windowInsetsController.isAppearanceLightNavigationBars = true
     }
 
 

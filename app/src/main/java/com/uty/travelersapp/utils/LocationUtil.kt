@@ -23,7 +23,7 @@ class LocationUtil(private val context: Context) {
     private lateinit var userAddress: String
     private val locationPermissionCode = 2
 
-    private fun getUserLocation(): Location? {
+    fun getUserLocation(): Location? {
         var locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED

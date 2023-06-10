@@ -20,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -280,7 +281,8 @@ class EditProfileFragment : Fragment() {
                 binding.imgEditProfil.setImageURI(profilePictureUri)
                 binding.imgEditProfil.setColorFilter(null)
                 binding.imgEditProfil.imageTintList = null
-                Log.d("kencana", "camera uri: " +currentPhotoPath.toString())
+                Log.d("kencana", "camera uri: " + currentPhotoPath)
+                binding.imgEditProfil.setContentPadding(0, 0, 0, 0)
             }
 
             u?.let {
@@ -288,6 +290,7 @@ class EditProfileFragment : Fragment() {
                 binding.imgEditProfil.setImageURI(it)
                 binding.imgEditProfil.setColorFilter(null)
                 binding.imgEditProfil.imageTintList = null
+                binding.imgEditProfil.setContentPadding(0, 0, 0, 0)
             }
         }
 

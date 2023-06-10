@@ -4,20 +4,22 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-tools:context=".DetailPaketWisataActivity">
+tools:context=".fragments.paket_wisata.DetailPaketWisataFragment">
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="60dp"
-    android:fitsSystemWindows="true">
+
+>
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar_layout_detailpaket"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:liftOnScroll="true"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+>
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar_layout_detailpaket"
@@ -42,7 +44,7 @@ tools:context=".DetailPaketWisataActivity">
                     android:id="@+id/img_detail_paket"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fitsSystemWindows="true"
+
                     android:foreground="@drawable/shape_gradient_atas_bawah"
                     android:scaleType="centerCrop"
                     android:src="@drawable/hero_image_2"
@@ -168,12 +170,12 @@ tools:context=".DetailPaketWisataActivity">
                 app:cardCornerRadius="15dp"
                 app:strokeColor="#CECECE">
 
-<!--                <fragment-->
-<!--                    android:id="@+id/map_tujuan_wisata_1"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="300dp"-->
-<!--                    android:name="com.google.android.gms.maps.SupportMapFragment"-->
-<!--                    />-->
+                <!--                <fragment-->
+                <!--                    android:id="@+id/map_tujuan_wisata_1"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="300dp"-->
+                <!--                    android:name="com.google.android.gms.maps.SupportMapFragment"-->
+                <!--                    />-->
             </com.google.android.material.card.MaterialCardView>
             <TextView
                 android:layout_width="wrap_content"
@@ -188,23 +190,24 @@ tools:context=".DetailPaketWisataActivity">
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-    <LinearLayout
-        android:id="@+id/bottom_bar"
+<LinearLayout
+    android:id="@+id/bottom_bar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:gravity="center"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    android:background="@color/white"
+    >
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_pesan_paket_wisata"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:background="@color/white"
-        >
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_pesan_paket_wisata"
-            android:layout_width="match_parent"
-            android:layout_height="55dp"
-            app:shapeAppearance="@style/ShapeAppearance.App.Button"
-            android:text="Pesan"/>
+        android:layout_height="55dp"
 
-    </LinearLayout>
+        app:shapeAppearance="@style/ShapeAppearance.App.Button"
+        android:text="Pesan"/>
+
+</LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

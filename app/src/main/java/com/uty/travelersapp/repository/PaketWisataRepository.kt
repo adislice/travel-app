@@ -2,10 +2,15 @@ package com.uty.travelersapp.repository
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.uty.travelersapp.models.JenisArmada
 import com.uty.travelersapp.models.PaketWisataItem
+import com.uty.travelersapp.models.ProdukPaketWisata
+import com.uty.travelersapp.models.Response
 import com.uty.travelersapp.models.TempatWisataArrayItem
 import com.uty.travelersapp.models.TempatWisataItem
 import com.uty.travelersapp.utils.FirebaseUtils
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
 class PaketWisataRepository {
@@ -34,30 +39,6 @@ class PaketWisataRepository {
         }
 
     }
-//    fun getAllTujuanWisata(tujuanWisataList: MutableLiveData<ArrayList<TujuanWisataItem>>, docId: String) {
-//        val _twList = ArrayList<TujuanWisataItem>()
-//        dbCol.document(docId).get()
-//            .addOnSuccessListener {result ->
-//                val twList: List<TujuanWisataItem> = result.toObject(TempatWisataList::class.java)!!.tempat_wisata_list!!
-//                for (tw in twList) {
-//                    val _tw = tw
-//
-//                    tw.tempat_wisata?.get()
-//                        ?.addOnSuccessListener { docRes ->
-//                            _tw.nama = docRes.getString("nama")
-//                            _tw.tempat_wisata_id = docRes.id
-//                            _tw.tempat_wisata_data = docRes.toObject(TempatWisataItem::class.java)!!
-//                            docRes.reference.collection("foto").orderBy("nama").limit(1).get()
-//                                .addOnSuccessListener {docsRes ->
-//                                    val foto = docsRes.documents[0].toObject(FotoModel::class.java)
-//                                    _tw.foto_thumb = foto
-//                                    _twList.add(_tw)
-//                                    tujuanWisataList.postValue(_twList)
-//                                }
-//                        }
-//                }
-//            }
-//    }
 
     fun getAllTujuanWisataByModel(tujuanWisataList: MutableLiveData<ArrayList<TempatWisataArrayItem>>, tempat_wisata_list: List<TempatWisataArrayItem>) {
         val _twList = ArrayList<TempatWisataArrayItem>()
@@ -75,26 +56,41 @@ class PaketWisataRepository {
 
         }
     }
-//    fun getAllTujuanWisataNew(docId: String): {
-//        val _twList = ArrayList<TujuanWisataItem>()
-//        val result = dbCol.document(docId).get()
-//            .addOnSuccessListener {result ->
-//                val twList: List<TujuanWisataItem> = result.toObject(TempatWisataList::class.java)!!.tempat_wisata_list!!
-//                for (tw in twList) {
-//                    val _tw = tw
-//                    val docRes = tw.tempat_wisata?.get()
-//                        ?.addOnSuccessListener { docRes ->
-//                            _tw.nama = docRes.getString("nama")
-//                            docRes.reference.collection("foto").orderBy("nama").limit(1).get()
-//                                .addOnSuccessListener {docsRes ->
-//                                    val foto = docsRes.documents.get(0).toObject(FotoModel::class.java)
-//                                    _tw.foto_thumb = foto
-//                                    _twList.add(_tw)
-//
-//                                }
-//                        }
-//                }
-//            }
-//        return _twList
-//    }
+
+
+    fun getProdukPaketWisata(idPaket: String) = flow {
+        val _produkList = ArrayList<ProdukPaketWisata>()
+        emit(Response.Loading())
+        val produkCol = dbCol.document(idPaket).collection("produk")
+        val result = produkCol.get().await()
+        result.documents.forEach { doc ->
+            val produkObject = doc.toObject(ProdukPaketWisata::class.java)!!
+            val jenisPaketDoc = produkObject.jenis_armada_ref?.get()?.await()!!
+            if (jenisPaketDoc.exists()){
+                val jenisObject = jenisPaketDoc.toObject(JenisArmada::class.java)
+                produkObject.jenis_armada = jenisObject
+            }
+            _produkList.add(produkObject)
+        }
+        emit(Response.Success(_produkList))
+    }.catch { error ->
+        error.message?.let { errorMessage ->
+            emit(Response.Failure(errorMessage))
+        }
+    }
+
+    fun getDetailPaketWisata(idPaket: String) = flow {
+        val paketDocRef = dbCol.document(idPaket).get().await()
+        if (paketDocRef.exists()) {
+            val data = paketDocRef.toObject(PaketWisataItem::class.java)!!
+            data.id = paketDocRef.id
+            emit(Response.Success(data))
+        } else {
+            emit(Response.Failure("Paket Wisata Tidak Ditemukan"))
+        }
+    }.catch { error ->
+        error.message?.let { errorMessage ->
+            emit(Response.Failure(errorMessage))
+        }
+    }
 }
