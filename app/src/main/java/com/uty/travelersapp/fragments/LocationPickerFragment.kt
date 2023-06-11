@@ -1,5 +1,7 @@
 package com.uty.travelersapp.fragments
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.location.Location
 import androidx.fragment.app.Fragment
 
@@ -11,9 +13,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.uty.travelersapp.R
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,12 +30,18 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.card.MaterialCardView
 import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.LocationUtil
+import com.uty.travelersapp.utils.PermissionUtils
+import kotlinx.coroutines.tasks.await
 
 class LocationPickerFragment : Fragment() {
     private var lokasiAnda: Location? = null
     private var lokasiTerpilih: LatLng? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var gMap: GoogleMap
+
 
     private val callback = OnMapReadyCallback { googleMap ->
+        gMap = googleMap
         /**
          * Manipulates the map once available.
          * This callback is triggered when the map is ready to be used.
@@ -40,24 +51,18 @@ class LocationPickerFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-        val locationUtil = LocationUtil(requireContext())
-        lokasiAnda = locationUtil.getUserLocation()
-        Log.d("kencana", "lokasi anda: " + lokasiAnda.toString())
-//        if (lokasiAnda != null) {
-            val lokasiAndaLatLng = LatLng(lokasiAnda!!.latitude, lokasiAnda!!.longitude)
-        lokasiTerpilih = lokasiAndaLatLng
-        Log.d("kencana", "latlng: " + lokasiAndaLatLng.toString())
-        val txtLokasi = view?.findViewById<TextView>(R.id.txt_lokasi_terdeteksi)
 
-        txtLokasi?.text = Helper.getAddress(requireActivity(), lokasiAnda!!.latitude, lokasiAnda!!.longitude)
+        getCurrentLocation()
+        Log.d("kencana", "lokasi anda: " + lokasiAnda.toString())
+        val txtLokasi = view?.findViewById<TextView>(R.id.txt_lokasi_terdeteksi)
+        if (lokasiAnda != null) {
+            val lokasiAndaLatLng = LatLng(lokasiAnda!!.latitude, lokasiAnda!!.longitude)
+            lokasiTerpilih = lokasiAndaLatLng
+            Log.d("kencana", "latlng: " + lokasiAndaLatLng.toString())
+            txtLokasi?.text = Helper.getAddress(requireActivity(), lokasiAnda!!.latitude, lokasiAnda!!.longitude)
             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(lokasiAndaLatLng, 15f)
             googleMap.moveCamera(cameraUpdate)
-//        } else {
-//            val sydney = LatLng(-34.0, 151.0)
-////            googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-//            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-//        }
-
+        }
 
         val oldPosition = googleMap.cameraPosition.target
 
@@ -106,5 +111,46 @@ class LocationPickerFragment : Fragment() {
             findNavController().previousBackStackEntry?.savedStateHandle?.set("MAP_PICKER_LAT_LNG", lokasiTerpilih)
             findNavController().popBackStack()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        when {
+            PermissionUtils.checkAccessFineLocationGranted(requireActivity()) -> {
+                when {
+                    PermissionUtils.isLocationEnabled(requireActivity()) -> {
+                    getCurrentLocation()
+                    }
+                    else -> {
+                        PermissionUtils.showGPSNotEnabledDialog(requireActivity())
+                    }
+                }
+            }
+            else -> {
+                PermissionUtils.requestFineLocationPermission(requireActivity(), 1)
+            }
+        }
+    }
+
+    fun getCurrentLocation() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        if (ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            PermissionUtils.requestFineLocationPermission(requireActivity(), 29)
+            return
+        }
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            Log.d("kencana", "Lokasi: " + location.toString())
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 15f)
+            gMap.moveCamera(cameraUpdate)
+        }
+
     }
 }

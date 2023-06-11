@@ -63,9 +63,16 @@ class DetailPaketWisataFragment : Fragment() {
         ViewCompat.setOnApplyWindowInsetsListener(llBawah) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-            val mlp = view.layoutParams as MarginLayoutParams
-            mlp.bottomMargin = insets.bottom
-            view.layoutParams = mlp
+            val pb = insets.bottom + 10
+            view.setPadding(
+                view.paddingLeft,
+                view.paddingTop,
+                view.paddingRight,
+                pb
+            )
+//            val mlp = view.layoutParams as MarginLayoutParams
+//            mlp.bottomMargin = insets.bottom
+//            view.layoutParams = mlp
 
             WindowInsetsCompat.CONSUMED
         }
