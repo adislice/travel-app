@@ -7,13 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
 import com.uty.travelersapp.DetailTempatWisataActivity
 import com.uty.travelersapp.R
-import com.uty.travelersapp.extensions.Helpers
-import com.uty.travelersapp.extensions.Helpers.Companion.makeToast
 import com.uty.travelersapp.models.TempatWisataItem
-import com.uty.travelersapp.utils.MyLocation
 
 class ListTempatWisataAdapter: RecyclerView.Adapter<ListTempatWisataAdapter.ListTempatWisataViewHolder>() {
 
@@ -45,26 +42,19 @@ class ListTempatWisataAdapter: RecyclerView.Adapter<ListTempatWisataAdapter.List
             holder.itemView.context.startActivity(intent)
         }
         var jarak = "5 km"
-//        if (MyLocation.location != null) {
-//            val jarakk =
-//                Helpers.calculateDistance(
-//                    MyLocation.location!!.latitude,
-//                    MyLocation.location!!.longitude,
-//                    model.latitude!!.toDouble(),
-//                    model.longitude!!.toDouble()
-//                ).toString()
-//            jarakk?.let{
-//                jarak = it + " KM"
-//            }
-//        }
+
         holder.nama.text = model.nama
         holder.lokasi.text = model.alamat
-        Glide.with(holder.itemView.context)
-            .load(model.thumbnail_foto)
-            .centerCrop()
-            .placeholder(R.drawable.image_placeholder)
-            .error(R.drawable.image_placeholder)
-            .into(holder.gambar)
+//        Glide.with(holder.itemView.context)
+//            .load(model.foto?.firstOrNull())
+//            .centerCrop()
+//            .placeholder(R.drawable.image_placeholder)
+//            .error(R.drawable.image_placeholder)
+//            .into(holder.gambar)
+        holder.gambar.load(model.foto?.firstOrNull()) {
+            placeholder(R.drawable.loading_image_placeholder)
+            crossfade(true)
+        }
     }
 
     fun updateList(tempatWisataList: List<TempatWisataItem>) {

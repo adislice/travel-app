@@ -3,6 +3,7 @@ package com.uty.travelersapp.fragments
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.transition.TransitionManager
 import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
@@ -20,12 +21,14 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.uty.travelersapp.PaketWisataBaseActivity
 import com.uty.travelersapp.R
 import com.uty.travelersapp.models.ProdukPaketWisata
 import com.uty.travelersapp.models.Response
+import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.IntentKey
 import com.uty.travelersapp.viewmodel.PaketWisataViewModel
 
@@ -36,6 +39,7 @@ class PemesananBottomSheet : BottomSheetDialogFragment() {
     private var produkList = mutableMapOf<String, MaterialCardView>()
     private var selectedId: String = ""
     private var selectedProduk = MutableLiveData<ProdukPaketWisata>()
+    private lateinit var loadingView: CircularProgressIndicator
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,8 +50,7 @@ class PemesananBottomSheet : BottomSheetDialogFragment() {
             this.paketWisataId = mArgs.getString("PAKET_WISATA_ID", "")
         }
         val contextThemeWrapper = ContextThemeWrapper(activity, R.style.Theme_TravelersApp)
-        // Inflate the layout for this fragment
-//        return inflater.inflate(R.layout.modal_pemesanan_bottom_sheet, container, false)
+
         return inflater.cloneInContext(contextThemeWrapper).inflate(R.layout.modal_pemesanan_bottom_sheet, container, false)
     }
 
@@ -65,6 +68,8 @@ class PemesananBottomSheet : BottomSheetDialogFragment() {
             requireActivity().window.decorView
         )
         windowInsetsController.isAppearanceLightNavigationBars = true
+
+        loadingView = view.findViewById(R.id.loading)
 
         val tvSelectedId = view.findViewById<TextView>(R.id.tv_selectedId)
         val btnLanjutPesan = view.findViewById<Button>(R.id.btn_pesan_produk_paket)
@@ -86,11 +91,12 @@ class PemesananBottomSheet : BottomSheetDialogFragment() {
         paketWisataViewModel.getProdukPaketWisata.observe(viewLifecycleOwner) { response ->
             when(response){
                 is Response.Success -> {
+                    loadingView.visibility = View.GONE
                     Log.d("kencana", "produk: " + response.data.toString())
                     response.data.forEach { produk ->
                         val infl = layoutInflater.inflate(R.layout.cardview_produk_paket_wisata, null, false)
                         infl.findViewById<TextView>(R.id.nama_paket).text = produk.jenis_armada?.kapasitas_min.toString() + " - " + produk.jenis_armada?.kapasitas_max.toString() + ""
-                        infl.findViewById<TextView>(R.id.harga_paket).text = "Rp. " + produk.harga.toString()
+                        infl.findViewById<TextView>(R.id.harga_paket).text = Helper.formatRupiah(produk.harga!!)
                         infl.findViewById<TextView>(R.id.nama_kendaraan).text = produk.jenis_armada?.nama
                         infl.findViewById<TextView>(R.id.kapasitas_penumpang).text = produk.jenis_armada?.kapasitas_min.toString() + " - " + produk.jenis_armada?.kapasitas_max.toString() + " orang"
                         val cardview = infl.findViewById<MaterialCardView>(R.id.card_produk_paket_wisata)
@@ -103,6 +109,7 @@ class PemesananBottomSheet : BottomSheetDialogFragment() {
                             selectedProduk.value = produk
                         }
                         produkList[produk.id!!] = cardview
+                        TransitionManager.beginDelayedTransition(llContainer)
                         llContainer.addView(infl)
                     }
                 }

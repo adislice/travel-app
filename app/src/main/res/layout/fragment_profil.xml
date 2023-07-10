@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         app:liftOnScroll="true"
-        app:liftOnScrollColor="@color/toolbar_bg_lifted"
+
         app:liftOnScrollTargetViewId="@id/konten_profil">
 
         <com.google.android.material.appbar.MaterialToolbar
@@ -33,61 +33,89 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:orientation="vertical">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="30dp">
-                <LinearLayout
+                android:layout_marginBottom="20dp"
+                android:clipToPadding="false"
+                android:paddingBottom="10dp">
+
+                <View
+                    android:id="@+id/bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:background="@color/md_theme_light_primary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_profile"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginHorizontal="20dp"
+                    android:elevation="1dp"
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="2dp"
+                    app:layout_constraintBottom_toBottomOf="@id/bg"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/img_profil"
-                        android:layout_width="130dp"
-                        android:layout_height="130dp"
-                        app:shapeAppearanceOverlay="@style/RoundedPill"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_profile_pic_placeholder"
-                        app:tint="?attr/colorOnSurfaceVariant"
-                        android:background="#CCCCCC"
-                        app:layout_constraintDimensionRatio="H,1:1"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginBottom="10dp"/>
-                    <TextView
-                        android:textAlignment="center"
-                        android:id="@+id/txt_profil_nama"
+                    app:layout_constraintTop_toBottomOf="@id/bg">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="[nama]"
-                        android:layout_marginBottom="5dp"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        style="@style/TextAppearance.Material3.TitleLarge"/>
-                    <TextView
-                        android:textAlignment="center"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/txt_profil_email"
-                        android:text="[email]"/>
-                </LinearLayout>
+                        android:paddingTop="80dp"
+                        android:paddingBottom="40dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txt_profil_nama"
+                            style="@style/TextAppearance.Material3.TitleLarge"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:text="[nama]"
+                            android:textAlignment="center"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txt_profil_email"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="[email]"
+                            android:textAlignment="center" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/img_profil"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="#CCCCCC"
+                    android:elevation="8dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_profile_pic_placeholder"
+                    app:layout_constraintBottom_toTopOf="@id/card_profile"
+                    app:layout_constraintDimensionRatio="H,1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/card_profile"
+                    app:shapeAppearanceOverlay="@style/RoundedPill"
+                    app:tint="?attr/colorOnSurfaceVariant" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
+                android:layout_marginHorizontal="20dp"
                 android:layout_marginVertical="5dp"
                 android:clickable="true"
                 android:focusable="true"
@@ -125,6 +153,8 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:maxLines="1"
+                            android:ellipsize="end"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="Ubah nama, foto profile, nomor telepon"/>
                     </LinearLayout>
@@ -142,7 +172,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
+                android:layout_marginHorizontal="20dp"
                 android:layout_marginVertical="5dp"
                 android:clickable="true"
                 android:focusable="true"

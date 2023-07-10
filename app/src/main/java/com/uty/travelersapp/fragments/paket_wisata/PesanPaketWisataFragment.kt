@@ -5,9 +5,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.view.MarginLayoutParamsCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.gms.maps.model.LatLng
@@ -25,6 +32,10 @@ import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.IntentKey
 import com.uty.travelersapp.utils.MyUser
 import com.uty.travelersapp.viewmodel.PaketWisataViewModel
+import com.uty.travelersapp.viewmodel.PemesananViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -40,6 +51,13 @@ class PesanPaketWisataFragment : Fragment() {
     private var produkId: String = ""
     private var selectedProduk: ProdukPaketWisata? = null
     private var tanggalPerjalanan: Long = 0
+    private val pemesananViewModel: PemesananViewModel by activityViewModels()
+
+    private var nama = MutableStateFlow("")
+    private var tanggal = MutableStateFlow("")
+    private var noTelp = MutableStateFlow("")
+    private var lokasiJemput = MutableStateFlow("")
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,21 +71,37 @@ class PesanPaketWisataFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val windowInsetsController = WindowCompat.getInsetsController(
-            requireActivity().window,
-            requireActivity().window.decorView
-        )
-        windowInsetsController.apply {
-            isAppearanceLightStatusBars = true
-            isAppearanceLightNavigationBars = true
-        }
+        initializeLayout()
 
         produkId = arguments?.getString(IntentKey.PRODUK_PAKET_WISATA_ID, "")!!
+
+        // cek input
+        with(binding) {
+            inputNama.editText?.doOnTextChanged { text, start, before, count ->
+                nama.value = text.toString()
+            }
+            inputTanggal.editText?.doOnTextChanged { text, start, before, count ->
+                tanggal.value = text.toString()
+            }
+            inputNoTelp.editText?.doOnTextChanged { text, start, before, count ->
+                noTelp.value = text.toString()
+            }
+            inputLokasiJemput.editText?.doOnTextChanged { text, start, before, count ->
+                lokasiJemput.value = text.toString()
+            }
+        }
+
+        lifecycleScope.launch {
+            formIsValid.collect {
+                binding.btnLanjutPesan.isEnabled = it
+            }
+        }
 
         paketWisataViewModel.getProdukPaketWisata.observe(viewLifecycleOwner) { response ->
             when(response){
                 is Response.Success -> {
                     val selected = response.data.find { item -> item.id == produkId }
+                    pemesananViewModel.setProdukTerpilih(selected!!)
                     this.selectedProduk = selected
                     binding.kirara.text = "Produk paket wisata dipilih: " + selected?.nama
 //                    binding.txtNamaProduk.text = selected?.nama
@@ -87,8 +121,9 @@ class PesanPaketWisataFragment : Fragment() {
         paketWisataViewModel.getDetailPaketWisata.observe(viewLifecycleOwner) { response ->
             when(response) {
                 is Response.Success -> {
+                    pemesananViewModel.setPaketWisataTerpilih(response.data)
                     Glide.with(requireActivity())
-                        .load(response.data.thumbnail_foto)
+                        .load(response.data.foto?.firstOrNull())
                         .placeholder(R.drawable.image_placeholder)
                         .error(R.drawable.image_placeholder)
                         .into(binding.imgThumbPaket)
@@ -137,7 +172,12 @@ class PesanPaketWisataFragment : Fragment() {
                 val date = sdf.format(it)
                 binding.inputTanggal.editText?.setText(date)
                 tanggalPerjalanan = it
+                pemesananViewModel.setTanggalPerjalanan(date)
             }
+        }
+
+        pemesananViewModel.tujuanWisata.observe(viewLifecycleOwner) {
+            Log.d("kencana", "destinasi: " + it.toString())
         }
 
         binding.inputNama.editText?.setText(MyUser.user?.nama)
@@ -150,6 +190,14 @@ class PesanPaketWisataFragment : Fragment() {
 //            }
         }
 
+        pemesananViewModel.tanggalPerjalanan.observe(viewLifecycleOwner) {data->
+            binding.inputTanggal.editText?.setText(data)
+        }
+        pemesananViewModel.lokasiPenjemputan.observe(viewLifecycleOwner) {data->
+            val alamat = Helper.getAddress(requireActivity(), data.latitude, data.longitude)
+            binding.inputLokasiJemput.editText?.setText(alamat)
+        }
+
         // get data from map picker
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<LatLng>("MAP_PICKER_LAT_LNG")?.observe(viewLifecycleOwner) { result ->
             Log.d("kencana", "result getted: " + result.toString())
@@ -159,7 +207,62 @@ class PesanPaketWisataFragment : Fragment() {
             }
         }
 
+        binding.btnLanjutPesan.setOnClickListener {
+            pemesananViewModel.setNamaPemesan(binding.inputNama.editText!!.text.toString())
+            pemesananViewModel.setNoTelpPemesan(binding.inputNoTelp.editText!!.text.toString())
+            Log.d("kencana", "vm pemesanan: lok: " + pemesananViewModel.lokasiPenjemputan.value + ", tgl: " + pemesananViewModel.tanggalPerjalanan.value)
+            findNavController().navigate(R.id.action_pesanPaketWisataFragment_to_checkoutFragment)
+        }
 
+    }
+
+    fun initializeLayout() {
+        val konten = binding.kontenPesan
+        ViewCompat.setOnApplyWindowInsetsListener(konten) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            val pb = insets.bottom
+            view.setPadding(
+                view.paddingLeft,
+                view.paddingTop,
+                view.paddingRight,
+                pb
+            )
+
+            WindowInsetsCompat.CONSUMED
+        }
+
+        binding.toolbar.navigationIcon = ContextCompat.getDrawable(requireActivity(), R.drawable.outline_arrow_back_24)
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    private var formIsValid = combine(nama, noTelp, lokasiJemput, tanggal) {nama, noTelp, lokasiJemput, tanggal ->
+        val isNamaValid = nama.isNotEmpty()
+        val isNoTelpValid = noTelp.isNotEmpty()
+        val isLokasiJemputValid = lokasiJemput.isNotEmpty()
+        val isTanggalValid = tanggal.isNotEmpty()
+        val msg = "tidak boleh kosong"
+
+        binding.inputNama.apply {
+            error = if (isNamaValid) null else "Nama $msg"
+            isErrorEnabled = !isNamaValid
+        }
+        binding.inputNoTelp.apply {
+            error = if (isNoTelpValid) null else "No Telepon $msg"
+            isErrorEnabled = !isNoTelpValid
+        }
+        binding.inputTanggal.apply {
+            error = if (isTanggalValid) null else "Tanggal $msg"
+            isErrorEnabled = !isTanggalValid
+        }
+        binding.inputLokasiJemput.apply {
+            error = if (isLokasiJemputValid) null else "Lokasi penjemputan $msg"
+            isErrorEnabled = !isLokasiJemputValid
+        }
+
+        isNamaValid and isNoTelpValid and isTanggalValid and isLokasiJemputValid
     }
 
 }

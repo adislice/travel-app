@@ -1,7 +1,11 @@
 package com.uty.travelersapp.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.snapshots
+import com.google.firebase.firestore.ktx.toObject
 import com.uty.travelersapp.models.JenisArmada
 import com.uty.travelersapp.models.PaketWisataItem
 import com.uty.travelersapp.models.ProdukPaketWisata
@@ -9,12 +13,15 @@ import com.uty.travelersapp.models.Response
 import com.uty.travelersapp.models.TempatWisataArrayItem
 import com.uty.travelersapp.models.TempatWisataItem
 import com.uty.travelersapp.utils.FirebaseUtils
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 
 class PaketWisataRepository {
     private val dbCol = FirebaseUtils.firebaseDatabase.collection("paket_wisata")
+
 
     @Volatile private var INSTANCE: PaketWisataRepository? = null
     fun getInstance(): PaketWisataRepository {
@@ -40,19 +47,54 @@ class PaketWisataRepository {
 
     }
 
-    fun getAllTujuanWisataByModel(tujuanWisataList: MutableLiveData<ArrayList<TempatWisataArrayItem>>, tempat_wisata_list: List<TempatWisataArrayItem>) {
+    fun getAllPaketWisataRealtime(limit: Int = 0) = dbCol.apply{
+        orderBy("created_at", Query.Direction.DESCENDING)
+        if (limit != 0) {
+            limit(limit.toLong())
+        }
+    }.snapshots().map { snapshot ->
+        val pwList = arrayListOf<PaketWisataItem>()
+        for (snap in snapshot.documents) {
+            var doc = snap.toObject(PaketWisataItem::class.java)
+            var resProduk = snap.reference.collection("produk").get().await()
+            var listProduk = resProduk.toObjects(ProdukPaketWisata::class.java)
+            for (produk in listProduk) {
+                val armadaRef = produk.jenis_armada_ref
+                val armadaResult = armadaRef?.get()?.await()
+                if (armadaResult != null) {
+                    if (armadaResult.exists()) {
+                        produk.jenis_armada = armadaResult.toObject(JenisArmada::class.java)
+                    }
+                }
+            }
+            doc?.produk = listProduk
+            val twList = arrayListOf<TempatWisataItem>()
+            for (twId in doc?.tempat_wisata!!) {
+                var _tw = FirebaseUtils.firebaseDatabase.collection("tempat_wisata").document(twId).get().await()
+                var tw = _tw.toObject(TempatWisataItem::class.java)
+                twList.add(tw!!)
+            }
+            doc.tempat_wisata_data = twList
+            pwList.add(doc)
+        }
+        return@map pwList
+    }
+
+    fun getAllTujuanWisataByModel(tujuanWisataList: MutableLiveData<ArrayList<TempatWisataArrayItem>>, tempat_wisata_list: List<String>) {
         val _twList = ArrayList<TempatWisataArrayItem>()
         val twCol = FirebaseUtils.firebaseDatabase.collection("tempat_wisata")
-        for (twItem in tempat_wisata_list) {
-            Log.d("firebase", "Getting data: " + twItem.tempat_wisata_id)
-            twCol.document(twItem.tempat_wisata_id!!).get()
+        tempat_wisata_list.forEachIndexed { index, twItem ->
+            Log.d("firebase", "Getting data: " + twItem)
+            twCol.document(twItem).get()
                 .addOnSuccessListener { result ->
                     val _tw = result.toObject(TempatWisataItem::class.java)!!
-                    val newData = twItem
-                    newData.tempat_wisata_data = _tw
+                    val newData = TempatWisataArrayItem(order = index+1, tempat_wisata_id = twItem, tempat_wisata_data = _tw)
                     _twList.add(newData)
                     tujuanWisataList.postValue(_twList)
                 }
+        }
+        for (twItem in tempat_wisata_list) {
+
 
         }
     }

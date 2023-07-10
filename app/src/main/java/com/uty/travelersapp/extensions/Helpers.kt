@@ -1,6 +1,7 @@
 package com.uty.travelersapp.extensions
 
 import android.content.Context
+import android.content.res.Resources
 import android.location.Location
 import android.view.View
 import android.widget.Toast
@@ -64,5 +65,8 @@ class Helpers {
             val user = gson.fromJson<UserModel>(json, UserModel::class.java)
             return user
         }
+
+        val Int.dp: Int
+            get() = (this / Resources.getSystem().displayMetrics.density).toInt()
     }
 }

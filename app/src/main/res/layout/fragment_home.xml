@@ -24,16 +24,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="250dp">
 
-<!--                <ImageView-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:scaleType="centerCrop"-->
+                <!--                <ImageView-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="match_parent"-->
+                <!--                    android:scaleType="centerCrop"-->
 
-<!--                    android:src="@drawable/hero_image_2" />-->
+                <!--                    android:src="@drawable/hero_image_2" />-->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/md_theme_light_primary"/>
+                    android:background="?attr/colorPrimary"/>
 
                 <View
                     android:layout_width="match_parent"
@@ -99,74 +99,103 @@
                 <com.google.android.material.search.SearchBar
                     android:layout_width="match_parent"
                     android:layout_height="45dp"
+                    android:visibility="gone"
                     android:hint="Cari..." />
             </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_marginTop="-55dp"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="0dp"
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="18sp"
-                    android:text="Tempat Wisata"
-                    android:textStyle="bold" />
+                    android:layout_marginHorizontal="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="Lihat semua"
-                    android:id="@+id/btn_lihatsemua_tempatwisata"
-                    app:icon="@drawable/baseline_chevron_right_24"
-                    app:iconGravity="textEnd"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="18sp"
+                        android:text="Tempat Wisata"
+                        android:textStyle="bold" />
 
-            </LinearLayout>
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="Lihat semua"
+                        android:id="@+id/btn_lihatsemua_tempatwisata"
+                        app:icon="@drawable/baseline_chevron_right_24"
+                        app:iconGravity="textEnd"/>
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/viewpager_home_carousel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
-                android:minHeight="120dp"
-                android:paddingHorizontal="16dp" />
+                </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewpager_home_carousel"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Paket Wisata"
-                    android:textStyle="bold" />
+                    android:layout_marginVertical="10dp"
+                    android:minHeight="120dp"
+                    android:animateLayoutChanges="true"
+                    android:paddingHorizontal="16dp" />
 
-                <com.google.android.material.button.MaterialButton
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="Lihat semua" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="18sp"
+                        android:text="Paket Wisata"
+                        android:textStyle="bold" />
 
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="Lihat semua"
+                        android:id="@+id/btn_lihatsemua_paketwisata"
+                        app:icon="@drawable/baseline_chevron_right_24"
+                        app:iconGravity="textEnd"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_home_paketwisata"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingVertical="10dp"
+                    android:paddingHorizontal="10dp"
+                    android:clipToPadding="false"
+                    android:animateLayoutChanges="true">
+
+                    <include layout="@layout/placeholder_item_home_paketwisata"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"/>
+
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="800dp" />
             </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="800dp" />
-
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -175,15 +204,15 @@
         android:id="@+id/appbar_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
         android:fitsSystemWindows="true"
-        app:liftOnScroll="true"
-        app:liftOnScrollColor="@color/toolbar_bg_lifted"
-        app:liftOnScrollTargetViewId="@id/scroll_content">
+        app:liftOnScroll="false"
+        style="@style/Widget.App.AppBarLayout">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar_home"
             android:layout_width="match_parent"
+            app:title="Home"
+            style="@style/Widget.App.Toolbar"
             android:layout_height="?attr/actionBarSize"
             />
     </com.google.android.material.appbar.AppBarLayout>

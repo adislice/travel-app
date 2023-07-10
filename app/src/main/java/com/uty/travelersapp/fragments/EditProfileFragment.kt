@@ -147,6 +147,7 @@ class EditProfileFragment : Fragment() {
             val fileExt = Helper.getMimeType(requireContext(), profilePictureUri)
             val fileName = "user_${userId}.${fileExt}"
             Log.d("kencana", "simpan profile")
+            Log.d("kencana", "picture uri: " + profilePictureUri)
 
             userViewModel.updateUser(userId, name.value, email.value, noTelp.value, profilePictureUri, fileName).observe(viewLifecycleOwner) { response ->
                 when (response) {
@@ -292,6 +293,8 @@ class EditProfileFragment : Fragment() {
                 binding.imgEditProfil.imageTintList = null
                 binding.imgEditProfil.setContentPadding(0, 0, 0, 0)
             }
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            profilePictureUri = Uri.EMPTY
         }
 
 //        binding.imgEditProfil.setImageBitmap(thumb)

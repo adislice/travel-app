@@ -8,7 +8,9 @@ data class PaketWisataItem (
     var id: String? = "",
     val nama: String? = null,
     val deskripsi: String? = null,
-    val thumbnail_foto: String? = null,
-    var tempat_wisata: List<TempatWisataArrayItem>? = null
+    val foto: ArrayList<String>? = null,
+    var tempat_wisata: ArrayList<String>? = null,
+    var tempat_wisata_data: ArrayList<TempatWisataItem>? = null,
+    var produk: List<ProdukPaketWisata>? = null
 ): Serializable
 

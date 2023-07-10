@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:paddingVertical="5dp"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:layout_marginHorizontal="8dp"
+        android:gravity="center_horizontal">
+        <View
+            android:id="@+id/tl_garis_atas"
+            android:layout_width="2dp"
+            android:layout_height="22dp"
+            android:background="?attr/colorPrimary"/>
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            app:tint="?attr/colorPrimary"
+            android:src="@drawable/round_circle_24"/>
+
+        <View
+            android:id="@+id/tl_garis_bawah"
+            android:layout_width="2dp"
+            android:layout_height="22dp"
+            android:background="?attr/colorPrimary"/>
+    </LinearLayout>
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/img_tl_tujuan_gambar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginRight="5dp"
+        app:shapeAppearanceOverlay="@style/RoundedSquare"
+        android:src="@drawable/hero_image_2"
+        android:scaleType="centerCrop"
+
+        />
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_tl_nama_tempat_wisata"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Candi Prambanan"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/txt_tl_alamat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Jateng"
+            />
+<!--        <TextView-->
+<!--            android:id="@+id/txt_tl_order"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Tujuan 1"-->
+<!--            android:textAllCaps="true"-->
+<!--            android:textSize="12sp"-->
+<!--            />-->
+    </LinearLayout>
+
+
+</LinearLayout>

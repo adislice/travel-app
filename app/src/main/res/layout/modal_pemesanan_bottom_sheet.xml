@@ -29,6 +29,13 @@
                 android:layout_marginBottom="20dp"
                 style="@style/TextAppearance.Material3.TitleLarge"/>
 
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/loading"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:indeterminate="true"/>
+
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -47,7 +54,9 @@
                     android:clipToPadding="false"
                     android:clipChildren="false"
                     android:paddingBottom="10dp"
-                    android:clipToOutline="false">
+                    android:clipToOutline="false"
+                    >
+
 
                 </LinearLayout>
             </HorizontalScrollView>

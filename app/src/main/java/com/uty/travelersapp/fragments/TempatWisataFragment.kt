@@ -1,7 +1,10 @@
 package com.uty.travelersapp.fragments
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +12,8 @@ import android.view.inputmethod.EditorInfo
 import androidx.activity.addCallback
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -27,8 +32,16 @@ import com.uty.travelersapp.viewmodel.TempatWisataViewModel
 class TempatWisataFragment : Fragment() {
     private lateinit var binding: FragmentTempatWisataBinding
     private lateinit var rvTempatWisata: RecyclerView
-    private lateinit var tempatWisataViewModel: TempatWisataViewModel
+    private val tempatWisataViewModel by activityViewModels<TempatWisataViewModel>()
     private lateinit var tempatWisataAdapter: ListTempatWisataAdapter
+    private var searchQuery = ""
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        savedInstanceState?.let {
+            searchQuery = it.getString("SEARCH_QUERY")!!
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,52 +54,27 @@ class TempatWisataFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val windowInsetsController = WindowCompat.getInsetsController(
-            requireActivity().window,
-            requireActivity().window.decorView
-        )
-        windowInsetsController.isAppearanceLightStatusBars = true
 
         val toolbar = binding.toolbarTempatWisata
         toolbar.inflateMenu(R.menu.menu_searchview)
         val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav_view)
 
-        var searchMenu = toolbar.menu.findItem(R.id.menuitem_searchview)
-        val searchView = binding.searchviewTempatwisata
-        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE)
 
-
-        searchView.addTransitionListener { searchView, previousState, newState ->
-            if (newState == com.google.android.material.search.SearchView.TransitionState.HIDING) {
-                bottomNav.visibility = View.VISIBLE
-            } else if (newState == com.google.android.material.search.SearchView.TransitionState.SHOWING) {
-                bottomNav.visibility = View.GONE
-            }
-        }
+        val inputSearch = binding.searchTempatwisata
+        inputSearch.translationY = 0.0f
         toolbar.setOnMenuItemClickListener { menuItem ->
             if (menuItem.itemId == R.id.menuitem_searchview) {
-                searchView.show()
+                if (inputSearch.visibility == View.GONE) {
+                    inputSearch.visibility = View.VISIBLE
+                } else {
+                    inputSearch.visibility = View.GONE
+                }
+
             }
             return@setOnMenuItemClickListener true
         }
-        searchView.editText.setOnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                requireActivity().makeToast("search " + searchView.text)
-                return@setOnEditorActionListener true
-            }
-            return@setOnEditorActionListener false
-        }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (searchView.isShowing) {
-                searchView.hide()
-            } else {
-//                requireActivity().makeToast("back")
-                findNavController().popBackStack()
-            }
-        }
 
-        val swipeView: SwipeRefreshLayout = binding.swipeRefreshTempatwisata
         rvTempatWisata = binding.rvTempatWisata
         rvTempatWisata.layoutManager = LinearLayoutManager(requireContext())
 
@@ -94,22 +82,43 @@ class TempatWisataFragment : Fragment() {
         tempatWisataAdapter = ListTempatWisataAdapter()
         rvTempatWisata.adapter = tempatWisataAdapter
 
-        tempatWisataViewModel = ViewModelProvider(this).get(TempatWisataViewModel::class.java)
 
-        tempatWisataViewModel.allTempatWisata.observe(viewLifecycleOwner, Observer {
-            tempatWisataAdapter.updateList(it)
+        tempatWisataViewModel.allTempatWisata.observe(viewLifecycleOwner) { response ->
+            tempatWisataAdapter.updateList(response)
             binding.loadingTempatwisata.visibility = View.GONE
-            swipeView.isRefreshing = false
-        })
-
-
-        swipeView.setOnRefreshListener {
-            tempatWisataViewModel.getAllTempatWisata()
         }
+
+//        tempatWisataViewModel.cobaAllTempatWisata.observe(viewLifecycleOwner) { response ->
+//            tempatWisataAdapter.updateList(response)
+//            binding.loadingTempatwisata.visibility = View.GONE
+//        }
+
+        binding.searchTempatwisata.editText?.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+//                requireContext().makeToast("search: " + v.text.toString())
+                tempatWisataViewModel.setSearchQuery(v.text.toString())
+                tempatWisataViewModel.performSearch(v.text.toString())
+                searchQuery = v.text.toString()
+            }
+            true
+        }
+
+        Log.d("kencana", searchQuery)
+        if (searchQuery.isNotEmpty()) {
+            inputSearch.visibility = View.VISIBLE
+        }
+        binding.searchTempatwisata.editText?.setText(searchQuery)
+
+
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("SEARCH_QUERY", searchQuery)
     }
 
 

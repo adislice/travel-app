@@ -29,8 +29,10 @@
         <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
+<!--        <item name="android:statusBarColor">@android:color/transparent</item>-->
+<!--        <item name="android:navigationBarColor">@android:color/transparent</item>-->
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:navigationBarColor">@color/black</item>
 
         <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
 <!--        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>-->
@@ -41,7 +43,19 @@
         <item name="android:textColor">#2C2C2C</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
         <item name="bottomSheetDragHandleStyle">@style/ThemeOverlay.App.BottomSheet.DragHandle</item>
+<!--        Toolbar style -->
+        <item name="appBarLayoutStyle">@style/Widget.App.AppBarLayout</item>
+        <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
 
+    </style>
+
+    <style name="Theme.TravelersApp.TransparentStatusBar" parent="Theme.TravelersApp">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="MyAlertDialog" parent="android:Theme.Material.Light.Dialog.Alert">
+        <item name="android:colorAccent">?attr/colorPrimary</item>
     </style>
 
     <style name="Theme.TravelersAppActionBar" parent="Theme.Material3.Light">
@@ -71,11 +85,6 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
-        <!-- Status bar color. -->
-<!--        <item name="android:statusBarColor">@android:color/transparent</item>-->
-        <!--        <item name="android:navigationBarColor">@android:color/transparent</item>-->
-
-        <!--        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">true</item>-->
 
 
         <!-- Customize your theme here. -->
@@ -91,6 +100,14 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">15%</item>
     </style>
+    <style name="RoundedSquare10">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10%</item>
+    </style>
+    <style name="RoundedSquare8dp">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
     <style name="RoundedMed">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">25%</item>
@@ -99,6 +116,10 @@
     <style name="Theme.TravelersApp.LightStatusBar" parent="Theme.TravelersApp">
         <item name="android:windowLightStatusBar">true</item>
 <!--        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>-->
+    </style>
+    <style name="Theme.TravelersApp.DarkStatusBar" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorPrimaryDark">@color/md_theme_light_primary</item>
     </style>
 
     <style name="Theme.TravelersApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.ActionBar" />
@@ -142,5 +163,28 @@
         <!--Alpha can be added optionally to achieve nice color blend-->
         <item name="android:alpha">0.3</item>
     </style>
+
+    <style name="Widget.App.AppBarLayout" parent="Widget.Material3.AppBarLayout">
+        <!-- Change the background color of the AppBarLayout so the AppBarLayout is green.
+                The toolbar is transparent by default so you will see this color through the toolbar. -->
+        <item name="android:background">@color/md_theme_light_primary</item>
+
+    </style>
+
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
+        <item name="titleTextColor">#FFFFFF</item>
+        <item name="navigationIconTint">#FFFFFF</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Toolbar" parent="">
+        <!-- Tint the menu and overflow icons -->
+        <item name="colorControlNormal">#FFFFFF</item>
+    </style>
+    
+    <style name="Widget.App.CollapsingToolbar" parent="Widget.Material3.CollapsingToolbar">
+        <item name="contentScrim">@color/md_theme_light_primary</item>
+    </style>
+
 
 </resources>

@@ -7,11 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.liveData
 import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import com.uty.travelersapp.models.PaketWisataItem
 import com.uty.travelersapp.models.TempatWisataArrayItem
 import com.uty.travelersapp.repository.PaketWisataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class PaketWisataViewModel: ViewModel() {
     private val repository: PaketWisataRepository
@@ -19,15 +21,23 @@ class PaketWisataViewModel: ViewModel() {
     val allPaketWisata: LiveData<List<PaketWisataItem>> = _allPaketWisata
     private var _tujuanWisata = MutableLiveData<ArrayList<TempatWisataArrayItem>>()
     val tujuanWisata: LiveData<ArrayList<TempatWisataArrayItem>> = _tujuanWisata
+    private var _homePaketWisata = MutableLiveData<ArrayList<PaketWisataItem>>()
+    var homePaketWisata: LiveData<ArrayList<PaketWisataItem>> = _homePaketWisata
 
     private var paketWisataId = MutableLiveData<String>()
 
     init {
         repository = PaketWisataRepository().getInstance()
         repository.getAllPaketWisata(_allPaketWisata)
+        viewModelScope.launch {
+            repository.getAllPaketWisataRealtime(5).collect { response ->
+                _homePaketWisata.value = response
+            }
+        }
+
     }
 
-    fun getTujuanWisata(twList: List<TempatWisataArrayItem>) {
+    fun getTujuanWisata(twList: List<String>) {
         repository.getAllTujuanWisataByModel(_tujuanWisata, twList)
     }
 
@@ -54,5 +64,12 @@ class PaketWisataViewModel: ViewModel() {
             }
         }
     }
+
+    fun getAllPaketWisataRealtime(limit: Int = 0) = liveData(Dispatchers.IO) {
+        repository.getAllPaketWisataRealtime(limit).collect { response ->
+            emit(response)
+        }
+    }
+
 
 }

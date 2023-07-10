@@ -1,5 +1,7 @@
 package com.uty.travelersapp
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -47,12 +49,29 @@ class DashboardActivity : AppCompatActivity() {
                 R.id.navitem_home,
                 R.id.navitem_tempat_wisata,
                 R.id.navitem_paket_wisata,
-                R.id.navitem_profil
+                R.id.navitem_profil,
+                R.id.navitem_riwayat_pemesanan
             )
         )
         val navController = findNavController(R.id.nav_host_fragment_activity_dashboard)
         navController.addOnDestinationChangedListener{ controller: NavController, destination:NavDestination, bundle: Bundle? ->
-            bottomNavView.isVisible = appBarConfiguration.topLevelDestinations.contains(destination.id)
+
+            if (appBarConfiguration.topLevelDestinations.contains(destination.id)) {
+                bottomNavView.animate().alpha(1.0f).setListener(object: AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator) {
+                        super.onAnimationStart(animation)
+                        bottomNavView.isVisible = true
+                    }
+                })
+            } else {
+                bottomNavView.animate().alpha(0.0f).setListener(object: AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        super.onAnimationEnd(animation)
+                        bottomNavView.isVisible = false
+                    }
+                })
+            }
+
         }
         bottomNavView.setupWithNavController(navController)
 

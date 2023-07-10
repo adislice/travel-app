@@ -61,7 +61,7 @@ class DetailTempatWisataActivity : AppCompatActivity(), OnMapReadyCallback {
                 binding.txtDetailWisataDeskripsi.text = tw.deskripsi
                 val imageList = ArrayList<SlideModel>()
                 tw.foto?.forEach { foto ->
-                    imageList.add(SlideModel(foto.url))
+                    imageList.add(SlideModel(foto))
                 }
                 val imageSlider = binding.detailWisataImageSlider
                 imageSlider.setImageList(imageList, ScaleTypes.CENTER_CROP)
@@ -90,31 +90,14 @@ class DetailTempatWisataActivity : AppCompatActivity(), OnMapReadyCallback {
 
     fun initializeLayout() {
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        windowInsetsController.isAppearanceLightNavigationBars = true
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar_detailwisata)
         toolbar.setNavigationOnClickListener {
             finish()
         }
-        val appBarLayout = findViewById<AppBarLayout>(R.id.appbar_layout_detailwisata)
-
         toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.baseline_arrow_back_24)
-        var scrollRange = -1
 
-        appBarLayout.addOnOffsetChangedListener { barLayout, verticalOffset ->
-            if (scrollRange == -1) {
-                scrollRange = barLayout?.totalScrollRange!!
-            }
-            var koma = ( (verticalOffset * -1) / scrollRange.toDouble() )
-            var percent:Double = koma * 100
-            binding.tvCheck.text = percent.toInt().toString()
-            if (percent <= 86) {
-                windowInsetsController.isAppearanceLightStatusBars = false
-                toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.baseline_arrow_back_24_white)
-            } else {
-                toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.baseline_arrow_back_24)
-                windowInsetsController.isAppearanceLightStatusBars = true
-            }
-        }
     }
 
 }

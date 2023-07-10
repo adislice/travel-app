@@ -40,7 +40,7 @@ class ListTujuanWisataAdapter(): RecyclerView.Adapter<ListTujuanWisataAdapter.Li
         holder.order.text = "TUJUAN " + data.order.toString()
         holder.alamat.text = data.tempat_wisata_data?.alamat
         Glide.with(holder.itemView.context)
-            .load(data.tempat_wisata_data?.thumbnail_foto)
+            .load(data.tempat_wisata_data?.foto?.firstOrNull())
             .centerCrop()
             .placeholder(R.drawable.image_placeholder)
             .error(R.drawable.image_placeholder)

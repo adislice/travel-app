@@ -15,7 +15,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -31,6 +33,7 @@ import com.google.android.material.card.MaterialCardView
 import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.LocationUtil
 import com.uty.travelersapp.utils.PermissionUtils
+import com.uty.travelersapp.viewmodel.PemesananViewModel
 import kotlinx.coroutines.tasks.await
 
 class LocationPickerFragment : Fragment() {
@@ -38,7 +41,7 @@ class LocationPickerFragment : Fragment() {
     private var lokasiTerpilih: LatLng? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var gMap: GoogleMap
-
+    private val pemesananViewModel: PemesananViewModel by activityViewModels()
 
     private val callback = OnMapReadyCallback { googleMap ->
         gMap = googleMap
@@ -52,7 +55,14 @@ class LocationPickerFragment : Fragment() {
          * user has installed Google Play services and returned to the app.
          */
 
-        getCurrentLocation()
+        if (pemesananViewModel.lokasiPenjemputan.value != null || pemesananViewModel.lokasiPenjemputan.isInitialized) {
+            lokasiTerpilih = pemesananViewModel.lokasiPenjemputan.value
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(pemesananViewModel.lokasiPenjemputan.value, 15f)
+            googleMap.moveCamera(cameraUpdate)
+        } else {
+            getCurrentLocation()
+        }
+
         Log.d("kencana", "lokasi anda: " + lokasiAnda.toString())
         val txtLokasi = view?.findViewById<TextView>(R.id.txt_lokasi_terdeteksi)
         if (lokasiAnda != null) {
@@ -105,9 +115,12 @@ class LocationPickerFragment : Fragment() {
 
             WindowInsetsCompat.CONSUMED
         }
+        val windowInsetsController = WindowCompat.getInsetsController(requireActivity().window, requireActivity().window.decorView)
+        windowInsetsController.isAppearanceLightStatusBars = true
 
         val btnSimpan = view.findViewById<Button>(R.id.btn_simpan_lokasi)
         btnSimpan.setOnClickListener {
+            pemesananViewModel.setLokasiPenjemputan(lokasiTerpilih!!)
             findNavController().previousBackStackEntry?.savedStateHandle?.set("MAP_PICKER_LAT_LNG", lokasiTerpilih)
             findNavController().popBackStack()
         }
@@ -152,5 +165,12 @@ class LocationPickerFragment : Fragment() {
             gMap.moveCamera(cameraUpdate)
         }
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        val windowInsetsController = WindowCompat.getInsetsController(requireActivity().window, requireActivity().window.decorView)
+        windowInsetsController.isAppearanceLightStatusBars = false
     }
 }

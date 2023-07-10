@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.uty.travelersapp.DetailPaketWisataActivity
+import coil.load
 import com.uty.travelersapp.PaketWisataBaseActivity
 import com.uty.travelersapp.R
 import com.uty.travelersapp.models.PaketWisataItem
-import com.uty.travelersapp.models.TempatWisataItem
+import com.uty.travelersapp.utils.IntentKey
 
 class ListPaketWisataAdapter: RecyclerView.Adapter<ListPaketWisataAdapter.ListPaketWisataViewHolder>() {
     private val paketWisataList = ArrayList<PaketWisataItem>()
@@ -37,17 +36,21 @@ class ListPaketWisataAdapter: RecyclerView.Adapter<ListPaketWisataAdapter.ListPa
         val model = paketWisataList[position]
         holder.container.setOnClickListener {
             val intent = Intent(holder.itemView.context, PaketWisataBaseActivity::class.java)
-            intent.putExtra("DETAIL_PAKETWISATA", model)
+            intent.putExtra(IntentKey.DETAIL_PAKET_WISATA, model.id)
             holder.itemView.context.startActivity(intent)
         }
         holder.nama.text = model.nama
         holder.deskripsi.text = model.deskripsi
-        Glide.with(holder.itemView.context)
-            .load(model.thumbnail_foto)
-            .centerCrop()
-            .placeholder(R.drawable.image_placeholder)
-            .error(R.drawable.image_placeholder)
-            .into(holder.gambar)
+//        Glide.with(holder.itemView.context)
+//            .load(model.foto?.firstOrNull())
+//            .centerCrop()
+//            .placeholder(R.drawable.image_placeholder)
+//            .error(R.drawable.image_placeholder)
+//            .into(holder.gambar)
+        holder.gambar.load(model.foto?.firstOrNull()) {
+            placeholder(R.drawable.loading_image_placeholder)
+            crossfade(true)
+        }
     }
 
     fun updateList(paketWisataList: List<PaketWisataItem>) {

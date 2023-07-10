@@ -20,7 +20,6 @@
                 android:id="@+id/card_paketwisata_gambar"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:foreground="@drawable/shape_gradient_black_from_bottom"
                 android:scaleType="centerCrop"
                 android:src="@drawable/hero_image_2"
                 app:layout_constraintDimensionRatio="H,18:7"

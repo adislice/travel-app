@@ -12,7 +12,7 @@
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
             app:liftOnScroll="false"
-            android:background="@color/toolbar_bg_lifted"
+
             >
 
             <com.google.android.material.appbar.MaterialToolbar

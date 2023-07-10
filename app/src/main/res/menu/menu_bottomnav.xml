@@ -2,19 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navitem_home"
-        android:icon="@drawable/home_fill0_wght600_grad0_opsz48"
+        android:icon="@drawable/selector_icon_home"
         android:title="Home" />
     <item
         android:id="@+id/navitem_tempat_wisata"
-        android:icon="@drawable/distance_fill0_wght600_grad0_opsz48"
+        android:icon="@drawable/selector_icon_tempat_wisata"
         android:title="Tempat Wisata"/>
     <item
         android:id="@+id/navitem_paket_wisata"
-        android:icon="@drawable/filter_fill0_wght600_grad0_opsz48"
+        android:icon="@drawable/selector_icon_paket_wisata"
         android:title="Paket Wisata"/>
     <item
+        android:id="@+id/navitem_riwayat_pemesanan"
+        android:icon="@drawable/selector_icon_riwayat_pemesanan"
+        android:title="Riwayat Pemesanan"/>
+
+    <item
         android:id="@+id/navitem_profil"
-        android:icon="@drawable/account_circle_fill0_wght600_grad0_opsz48"
+        android:icon="@drawable/selector_icon_profil"
         android:title="Profil"
         />
 </menu>

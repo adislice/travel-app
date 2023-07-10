@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+
+        android:layout_marginHorizontal="10dp"
+        android:gravity="center_horizontal">
+        <View
+            android:id="@+id/tl_garis_atas"
+            android:layout_width="2dp"
+            android:layout_height="@dimen/timeline_line_height"
+            android:background="?attr/colorPrimary"/>
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            app:tint="?attr/colorPrimary"
+            android:src="@drawable/round_circle_24"/>
+        <View
+            android:id="@+id/tl_garis_bawah"
+            android:layout_width="2dp"
+            android:layout_height="@dimen/timeline_line_height"
+            android:background="?attr/colorPrimary"/>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/tl_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tempat Wisata 1"/>
+</LinearLayout>

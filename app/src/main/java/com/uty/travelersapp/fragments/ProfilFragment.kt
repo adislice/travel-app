@@ -1,23 +1,13 @@
 package com.uty.travelersapp.fragments
 
-import android.app.Dialog
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.widget.Button
-import android.widget.TextView
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.uty.travelersapp.MainActivity
@@ -25,7 +15,6 @@ import com.uty.travelersapp.R
 import com.uty.travelersapp.customs.MyAlertDialogBuilder
 import com.uty.travelersapp.customs.MyAlertDialogType
 import com.uty.travelersapp.databinding.FragmentProfilBinding
-import com.uty.travelersapp.extensions.Helpers.Companion.getUserPref
 import com.uty.travelersapp.models.Response
 import com.uty.travelersapp.utils.FirebaseUtils.firebaseAuth
 import com.uty.travelersapp.viewmodel.UserViewModel
@@ -46,12 +35,6 @@ class ProfilFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val ivPro = binding.imgProfil
-
-        val windowInsetsController = WindowCompat.getInsetsController(
-            requireActivity().window,
-            requireActivity().window.decorView
-        )
-        windowInsetsController.isAppearanceLightStatusBars = true
 
         binding.btnLogoutUser.setOnClickListener {
 
@@ -103,7 +86,7 @@ class ProfilFragment : Fragment() {
                             Glide.with(requireActivity())
                                 .load(pp)
                                 .centerCrop()
-                                .placeholder(R.drawable.image_placeholder)
+                                .placeholder(R.drawable.loading_image_placeholder)
                                 .error(R.drawable.image_placeholder)
                                 .into(binding.imgProfil)
                             binding.imgProfil.setColorFilter(null)

@@ -25,7 +25,6 @@ tools:context=".DetailPaketWisataActivity">
             android:layout_width="match_parent"
             android:layout_height="300dp"
             app:collapsedTitleTextColor="?attr/colorOnSurfaceVariant"
-            app:contentScrim="@color/toolbar_bg_lifted"
             app:expandedTitleTextColor="@android:color/transparent"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:scrimAnimationDuration="300"

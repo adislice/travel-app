@@ -81,13 +81,16 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:background="#E6FFFFFF"
+        style="@style/Widget.Material3.AppBarLayout"
         app:liftOnScroll="false">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar_location_picker"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Pilih Lokasi Penjemputan" />
+            app:title="Pilih Lokasi Penjemputan"
+            style="@style/Widget.Material3.Toolbar"
+            app:titleTextColor="@color/md_theme_light_onSurface"/>
 
 
     </com.google.android.material.appbar.AppBarLayout>

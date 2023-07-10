@@ -36,6 +36,11 @@
         android:label="Paket Wisata"
         tools:layout="@layout/fragment_paket_wisata" />
     <fragment
+        android:id="@+id/navitem_riwayat_pemesanan"
+        android:name="com.uty.travelersapp.fragments.RiwayatPemesananFragment"
+        android:label="fragment_riwayat_pemesanan"
+        tools:layout="@layout/fragment_riwayat_pemesanan" />
+    <fragment
         android:id="@+id/navitem_profil"
         android:name="com.uty.travelersapp.fragments.ProfilFragment"
         android:label="fragment_profil"
@@ -53,4 +58,5 @@
         android:name="com.uty.travelersapp.fragments.EditProfileFragment"
         android:label="fragment_edit_profile"
         tools:layout="@layout/fragment_edit_profile" />
+
 </navigation>

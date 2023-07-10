@@ -60,7 +60,7 @@ class DetailPaketWisataActivity : AppCompatActivity() {
             binding.collapsingToolbarLayoutDetailpaket.title = pw.nama
             binding.txtDetailWisataDeskripsi.text = pw.deskripsi
             Glide.with(this)
-                .load(pw.thumbnail_foto)
+                .load(pw.foto?.firstOrNull())
                 .centerCrop()
                 .placeholder(R.drawable.image_placeholder)
                 .error(R.drawable.image_placeholder)
