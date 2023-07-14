@@ -37,6 +37,14 @@ class PaketWisataViewModel: ViewModel() {
 
     }
 
+    fun initAllPaketWisata() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getAllPaketWisataRealtime().collect { response ->
+                _allPaketWisata.postValue(response)
+            }
+        }
+    }
+
     fun getTujuanWisata(twList: List<String>) {
         repository.getAllTujuanWisataByModel(_tujuanWisata, twList)
     }

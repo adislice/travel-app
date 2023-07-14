@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.WindowCompat
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +21,7 @@ import com.uty.travelersapp.viewmodel.PaketWisataViewModel
 class PaketWisataFragment : Fragment() {
     private lateinit var binding: FragmentPaketWisataBinding
     private lateinit var rvPaketWisata: RecyclerView
-    private lateinit var paketWisataViewModel: PaketWisataViewModel
+    private val paketWisataViewModel by activityViewModels<PaketWisataViewModel>()
     private lateinit var paketWisataAdapter: ListPaketWisataAdapter
 
 
@@ -45,7 +46,8 @@ class PaketWisataFragment : Fragment() {
         rvPaketWisata.setHasFixedSize(true)
         paketWisataAdapter = ListPaketWisataAdapter()
         rvPaketWisata.adapter = paketWisataAdapter
-        paketWisataViewModel = ViewModelProvider(this).get(PaketWisataViewModel::class.java)
+
+        paketWisataViewModel.initAllPaketWisata()
 
         paketWisataViewModel.allPaketWisata.observe(viewLifecycleOwner, Observer {
             paketWisataAdapter.updateList(it)

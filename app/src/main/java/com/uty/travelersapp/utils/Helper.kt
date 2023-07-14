@@ -10,10 +10,7 @@ import android.location.Geocoder
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.material.progressindicator.CircularProgressIndicatorSpec
-import com.google.android.material.progressindicator.IndeterminateDrawable
 import com.uty.travelersapp.R
-import com.uty.travelersapp.extensions.Helpers.Companion.dp
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -169,17 +166,4 @@ object Helper {
         return "INV-KNC${Calendar.getInstance().get(Calendar.YEAR)}-$randomCode"
     }
 
-    fun getLoadingDrawable(ctx: Context): IndeterminateDrawable<CircularProgressIndicatorSpec> {
-        val spec = CircularProgressIndicatorSpec(
-            ctx,
-            null,
-            0,
-            com.google.android.material.R.style.Widget_Material3_CircularProgressIndicator_ExtraSmall
-        )
-        spec.indicatorSize = 10.dp
-        spec.indicatorInset = 10.dp
-        val progressIndicatorDrawable =
-            IndeterminateDrawable.createCircularDrawable(ctx, spec)
-        return progressIndicatorDrawable
-    }
 }

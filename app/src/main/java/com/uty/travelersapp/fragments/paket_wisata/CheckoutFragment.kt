@@ -254,9 +254,7 @@ class CheckoutFragment : Fragment() {
         lifecycleScope.launch {
             spinner.show()
             delay(5000)
-
         }
-
         val sekarang = LocalDateTime.now()
         val waktu24Jam = sekarang.plusHours(24)
         val batasBayar = Date.from(waktu24Jam.atZone(ZoneId.systemDefault()).toInstant())

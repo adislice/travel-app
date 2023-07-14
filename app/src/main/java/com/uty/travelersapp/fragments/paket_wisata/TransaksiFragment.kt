@@ -108,6 +108,7 @@ class TransaksiFragment : Fragment() {
                                 binding.txtStatus.text = "SELESAI"
                                 binding.txtStatus.setTextColor(ColorStatus.SELESAI_TEXT)
                                 binding.txtStatus.backgroundTintList = ColorStateList.valueOf(ColorStatus.SELESAI_BG)
+                                binding.btnBayarSekarang.visibility = View.GONE
                             }
                             Status.PENDING -> {
                                 binding.txtStatus.text = "PENDING"
