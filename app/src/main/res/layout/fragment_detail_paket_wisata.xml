@@ -86,9 +86,11 @@ tools:context=".fragments.paket_wisata.DetailPaketWisataFragment">
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested_scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
 
         <LinearLayout
             android:id="@+id/ll_konten_wrapper"
@@ -99,8 +101,69 @@ tools:context=".fragments.paket_wisata.DetailPaketWisataFragment">
             android:paddingHorizontal="20dp"
             >
 
-            <TextView
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp"
+                >
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5">
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        >
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/baseline_explore_24"
+                            app:tint="#039BE5" />
+                        <TextView
+                            android:id="@+id/txt_jml_tujuan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="3 tempat wisata"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        >
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_margin="10dp"
+                            app:tint="#FFB300"
+                            android:src="@drawable/baseline_access_time_filled_24"/>
+                        <TextView
+                            android:id="@+id/txt_waktu_perjalanan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1 hari 1 malam"/>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -117,10 +180,27 @@ tools:context=".fragments.paket_wisata.DetailPaketWisataFragment">
                 android:textSize="16sp" />
 
             <TextView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="Fasilitas"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txt_detail_wisata_fasilitas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:text="Candi Prambanan adalah kompleks candi Hindu (Syaiwa) terbesar di Indonesia yang dibangun pada abad ke-9 Masehi. Candi yang juga disebut sebagai Rara Jonggrang ini dipersembahkan untuk Trimurti, tiga dewa utama Hindu yaitu dewa Brahma sebagai dewa pencipta, dewa Wisnu sebagai dewa pemelihara, dan dewa Siwa sebagai dewa pemusnah"
+                android:textSize="16sp" />
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:text="Tujuan Wisata"
+                android:text="Tempat Wisata Tujuan"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 />
@@ -138,15 +218,36 @@ tools:context=".fragments.paket_wisata.DetailPaketWisataFragment">
                 android:layout_height="300dp"
                 android:layout_marginBottom="20dp"
                 app:cardCornerRadius="15dp"
+
                 app:strokeColor="#CECECE">
 
-                <!--                <fragment-->
-                <!--                    android:id="@+id/map_tujuan_wisata_1"-->
-                <!--                    android:layout_width="match_parent"-->
-                <!--                    android:layout_height="300dp"-->
-                <!--                    android:name="com.google.android.gms.maps.SupportMapFragment"-->
-                <!--                    />-->
+                                <fragment
+                                    android:id="@+id/map_tujuan_wisata_1"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="300dp"
+                                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                                    />
             </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:paddingBottom="40dp">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="2dp"
+                    android:src="@drawable/ic_marker_fix"
+                    app:tint="#B3F44336"
+                    android:tintMode="src_atop"/>
+                <TextView
+                    android:id="@+id/tv_lokasi_anda"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Lokasi Anda"/>
+            </LinearLayout>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="2dp"
@@ -174,8 +275,7 @@ tools:context=".fragments.paket_wisata.DetailPaketWisataFragment">
         android:id="@+id/btn_pesan_paket_wisata"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-
-        app:shapeAppearance="@style/ShapeAppearance.App.Button"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium"
         android:text="Pesan"/>
 
 </LinearLayout>

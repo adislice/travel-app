@@ -2,6 +2,7 @@ package com.uty.travelersapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +16,6 @@ import com.uty.travelersapp.utils.FirebaseUtils.firebaseAuth
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +48,12 @@ class MainActivity : AppCompatActivity() {
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.isAppearanceLightStatusBars = true
         windowInsetsController.isAppearanceLightNavigationBars = true
+    }
+
+    override fun onDestroy() {
+        Log.d("kencana", "Clearing cache...")
+        applicationContext.cacheDir.deleteRecursively()
+        super.onDestroy()
     }
 
 

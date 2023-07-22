@@ -131,6 +131,18 @@ object Helper {
         }
     }
 
+    fun formatTanggalDanWaktu(date: Date): String {
+        try {
+            val pattern = "d MMMM yyyy, HH:mm"
+            val locale = Locale("id", "ID") // Indonesian locale for month names
+            val simpleDateFormat = SimpleDateFormat(pattern, locale)
+            return simpleDateFormat.format(date)
+        } catch (e: Exception){
+            return ""
+        }
+
+    }
+
     fun formatRupiah(amount: Double): String? {
         try {
             val numberFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))

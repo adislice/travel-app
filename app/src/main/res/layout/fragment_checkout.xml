@@ -408,6 +408,7 @@
                                     android:textAlignment="textEnd"
                                     android:textStyle="bold"
                                     android:clickable="true"
+                                    android:visibility="gone"
                                     android:paddingHorizontal="2dp"
                                     android:textColor="?attr/colorPrimary"
                                     android:background="?attr/selectableItemBackground"
@@ -608,7 +609,7 @@
                     android:id="@+id/btn_proses_transaksi"
                     android:layout_width="wrap_content"
                     android:layout_height="55dp"
-                    app:shapeAppearance="@style/ShapeAppearance.App.Button"
+                    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium"
                     android:text="Proses Transaksi"/>
             </LinearLayout>
 

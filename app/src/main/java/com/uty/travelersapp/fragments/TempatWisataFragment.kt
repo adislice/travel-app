@@ -38,9 +38,6 @@ class TempatWisataFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        savedInstanceState?.let {
-            searchQuery = it.getString("SEARCH_QUERY")!!
-        }
     }
 
     override fun onCreateView(
@@ -75,6 +72,7 @@ class TempatWisataFragment : Fragment() {
         }
 
 
+
         rvTempatWisata = binding.rvTempatWisata
         rvTempatWisata.layoutManager = LinearLayoutManager(requireContext())
 
@@ -82,20 +80,17 @@ class TempatWisataFragment : Fragment() {
         tempatWisataAdapter = ListTempatWisataAdapter()
         rvTempatWisata.adapter = tempatWisataAdapter
 
+        tempatWisataViewModel.setSearchQuery(searchQuery)
+        tempatWisataViewModel.performSearch(searchQuery)
 
         tempatWisataViewModel.allTempatWisata.observe(viewLifecycleOwner) { response ->
             tempatWisataAdapter.updateList(response)
             binding.loadingTempatwisata.visibility = View.GONE
         }
 
-//        tempatWisataViewModel.cobaAllTempatWisata.observe(viewLifecycleOwner) { response ->
-//            tempatWisataAdapter.updateList(response)
-//            binding.loadingTempatwisata.visibility = View.GONE
-//        }
 
-        binding.searchTempatwisata.editText?.setOnEditorActionListener { v, actionId, event ->
+        inputSearch.editText?.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-//                requireContext().makeToast("search: " + v.text.toString())
                 tempatWisataViewModel.setSearchQuery(v.text.toString())
                 tempatWisataViewModel.performSearch(v.text.toString())
                 searchQuery = v.text.toString()
@@ -103,23 +98,12 @@ class TempatWisataFragment : Fragment() {
             true
         }
 
-        Log.d("kencana", searchQuery)
-        if (searchQuery.isNotEmpty()) {
-            inputSearch.visibility = View.VISIBLE
-        }
-        binding.searchTempatwisata.editText?.setText(searchQuery)
-
-
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString("SEARCH_QUERY", searchQuery)
-    }
 
 
 }

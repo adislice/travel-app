@@ -11,6 +11,7 @@ import coil.load
 import com.uty.travelersapp.PaketWisataBaseActivity
 import com.uty.travelersapp.R
 import com.uty.travelersapp.models.PaketWisataItem
+import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.IntentKey
 
 class ListPaketWisataAdapter: RecyclerView.Adapter<ListPaketWisataAdapter.ListPaketWisataViewHolder>() {
@@ -20,6 +21,9 @@ class ListPaketWisataAdapter: RecyclerView.Adapter<ListPaketWisataAdapter.ListPa
         val nama = itemView.findViewById<TextView>(R.id.card_paketwisata_nama)
         val deskripsi = itemView.findViewById<TextView>(R.id.card_paketwisata_desc)
         val gambar = itemView.findViewById<ImageView>(R.id.card_paketwisata_gambar)
+        val harga = itemView.findViewById<TextView>(R.id.card_txt_harga)
+        val jmlTempat = itemView.findViewById<TextView>(R.id.card_txt_jml_tempat)
+        val waktu = itemView.findViewById<TextView>(R.id.card_txt_waktu)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListPaketWisataViewHolder {
@@ -41,19 +45,29 @@ class ListPaketWisataAdapter: RecyclerView.Adapter<ListPaketWisataAdapter.ListPa
         }
         holder.nama.text = model.nama
         holder.deskripsi.text = model.deskripsi
-//        Glide.with(holder.itemView.context)
-//            .load(model.foto?.firstOrNull())
-//            .centerCrop()
-//            .placeholder(R.drawable.image_placeholder)
-//            .error(R.drawable.image_placeholder)
-//            .into(holder.gambar)
         holder.gambar.load(model.foto?.firstOrNull()) {
             placeholder(R.drawable.loading_image_placeholder)
             crossfade(true)
         }
+        model.produk?.let { pro ->
+            var produkList = pro.sortedBy { it.harga }
+            val hargaStr = produkList.first().harga?.let { it1 -> Helper.formatRupiah(it1) }
+            var hargaJmlSeat = produkList.first().jenis_kendaraan?.jumlah_seat.toString() + " seat"
+            var hargaPerJmlSeat = "$hargaStr/$hargaJmlSeat"
+            holder.harga.text = "Mulai dari ${hargaPerJmlSeat}"
+        }
+        model.waktu_perjalanan?.let {
+            var waktu = ""
+            waktu += it.hari.toString() + " hari"
+            if (!it.malam.equals(0)){
+                waktu += " " + it.malam.toString() + " malam"
+            }
+            holder.waktu.text = waktu
+        }
+        holder.jmlTempat.text = model.tempat_wisata?.size?.toString() + " tempat wisata"
     }
 
-    fun updateList(paketWisataList: List<PaketWisataItem>) {
+    fun updateList(paketWisataList: ArrayList<PaketWisataItem>) {
         this.paketWisataList.clear()
         this.paketWisataList.addAll(paketWisataList)
         notifyDataSetChanged()

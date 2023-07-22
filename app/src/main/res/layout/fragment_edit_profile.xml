@@ -179,9 +179,10 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_simpan_profil"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="55dp"
                 android:layout_gravity="bottom"
                 android:layout_margin="20dp"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium"
                 android:text="Simpan"
                 app:iconGravity="textStart" />
 

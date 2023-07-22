@@ -10,20 +10,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.bumptech.glide.Glide
 import com.uty.travelersapp.PaketWisataBaseActivity
 import com.uty.travelersapp.R
 import com.uty.travelersapp.models.Status
-import com.uty.travelersapp.models.Transaksi
+import com.uty.travelersapp.models.Pemesanan
 import com.uty.travelersapp.utils.ColorStatus
 import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.IntentKey
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class ListRiwayatPemesananAdapter: RecyclerView.Adapter<ListRiwayatPemesananAdapter.ListRiwayatPemesananViewHolder>() {
-    private val riwayatPemesananList = ArrayList<Transaksi>()
+    private val riwayatPemesananList = ArrayList<Pemesanan>()
     class ListRiwayatPemesananViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val container = itemView
         val namaPaket = itemView.findViewById<TextView>(R.id.txt_nama_paketwisata)
@@ -58,17 +56,17 @@ class ListRiwayatPemesananAdapter: RecyclerView.Adapter<ListRiwayatPemesananAdap
             holder.itemView.context.startActivity(intent)
         }
         val format = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("id", "ID"))
-        holder.namaPaket.text = "${model.paket_wisata?.nama} (${model.produk?.nama})"
+        holder.namaPaket.text = "${model.paket_wisata?.nama} (${model.jenis_kendaraan?.nama})"
 
         holder.status.text = when(model.status) {
-            Status.BELUM_BAYAR -> "Belum bayar"
+            Status.DIPROSES -> "Diproses"
             Status.SELESAI -> "Selesai"
             Status.PENDING -> "Pending"
             else -> ""
         }
         when(model.status) {
-            Status.BELUM_BAYAR -> {
-                holder.status.text = "BELUM BAYAR"
+            Status.DIPROSES -> {
+                holder.status.text = "DIPROSES"
                 holder.status.setTextColor(ColorStatus.BELUM_BAYAR_TEXT)
                 holder.status.backgroundTintList = ColorStateList.valueOf(ColorStatus.BELUM_BAYAR_BG)
             }
@@ -89,7 +87,7 @@ class ListRiwayatPemesananAdapter: RecyclerView.Adapter<ListRiwayatPemesananAdap
             }
         }
 //        holder.tanggalPerjalanan.text = model.keberangkatan?.tanggal_perjalanan?.let { format.format(it) }
-        holder.kodeTransaksi.text = model.kode_transaksi
+        holder.kodeTransaksi.text = model.kode_pemesanan
         holder.tanggalPerjalanan.text = "Keberangkatan: ${Helper.dateToTanggalLengkap(model.keberangkatan?.tanggal_perjalanan)}"
         holder.totalBayar.text = model.total_bayar?.let { Helper.formatRupiah(it) }
         holder.gambar.load(model.paket_wisata?.foto) {
@@ -98,7 +96,7 @@ class ListRiwayatPemesananAdapter: RecyclerView.Adapter<ListRiwayatPemesananAdap
         }
     }
 
-    fun updateList(newRiwayatPemesananList: ArrayList<Transaksi>) {
+    fun updateList(newRiwayatPemesananList: ArrayList<Pemesanan>) {
         this.riwayatPemesananList.clear()
         this.riwayatPemesananList.addAll(newRiwayatPemesananList)
         notifyDataSetChanged()

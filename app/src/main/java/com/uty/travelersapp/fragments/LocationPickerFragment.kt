@@ -28,20 +28,16 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.card.MaterialCardView
 import com.uty.travelersapp.utils.Helper
-import com.uty.travelersapp.utils.LocationUtil
 import com.uty.travelersapp.utils.PermissionUtils
-import com.uty.travelersapp.viewmodel.PemesananViewModel
-import kotlinx.coroutines.tasks.await
+import com.uty.travelersapp.viewmodel.AlurPemesananViewModel
 
 class LocationPickerFragment : Fragment() {
     private var lokasiAnda: Location? = null
     private var lokasiTerpilih: LatLng? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var gMap: GoogleMap
-    private val pemesananViewModel: PemesananViewModel by activityViewModels()
+    private val alurPemesananViewModel: AlurPemesananViewModel by activityViewModels()
 
     private val callback = OnMapReadyCallback { googleMap ->
         gMap = googleMap
@@ -55,9 +51,9 @@ class LocationPickerFragment : Fragment() {
          * user has installed Google Play services and returned to the app.
          */
 
-        if (pemesananViewModel.lokasiPenjemputan.value != null || pemesananViewModel.lokasiPenjemputan.isInitialized) {
-            lokasiTerpilih = pemesananViewModel.lokasiPenjemputan.value
-            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(pemesananViewModel.lokasiPenjemputan.value, 15f)
+        if (alurPemesananViewModel.lokasiPenjemputan.value != null || alurPemesananViewModel.lokasiPenjemputan.isInitialized) {
+            lokasiTerpilih = alurPemesananViewModel.lokasiPenjemputan.value
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(alurPemesananViewModel.lokasiPenjemputan.value, 15f)
             googleMap.moveCamera(cameraUpdate)
         } else {
             getCurrentLocation()
@@ -120,7 +116,7 @@ class LocationPickerFragment : Fragment() {
 
         val btnSimpan = view.findViewById<Button>(R.id.btn_simpan_lokasi)
         btnSimpan.setOnClickListener {
-            pemesananViewModel.setLokasiPenjemputan(lokasiTerpilih!!)
+            alurPemesananViewModel.setLokasiPenjemputan(lokasiTerpilih!!)
             findNavController().previousBackStackEntry?.savedStateHandle?.set("MAP_PICKER_LAT_LNG", lokasiTerpilih)
             findNavController().popBackStack()
         }

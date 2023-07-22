@@ -79,5 +79,20 @@
         android:id="@+id/transaksiFragment"
         android:name="com.uty.travelersapp.fragments.paket_wisata.TransaksiFragment"
         android:label="fragment_transaksi"
-        tools:layout="@layout/fragment_transaksi" />
+        tools:layout="@layout/fragment_transaksi" >
+        <action
+            android:id="@+id/action_transaksiFragment_to_lihatLokasiFragment"
+            app:destination="@id/lihatLokasiFragment"
+            app:enterAnim="@anim/slide_enter"
+            app:exitAnim="@anim/slide_exit"
+            app:popEnterAnim="@anim/slide_pop_enter"
+            app:popExitAnim="@anim/slide_pop_exit"/>
+    </fragment>
+    <fragment
+        android:id="@+id/lihatLokasiFragment"
+        android:name="com.uty.travelersapp.fragments.LihatLokasiFragment"
+        android:label="fragment_lihat_lokasi"
+        tools:layout="@layout/fragment_lihat_lokasi" >
+
+    </fragment>
 </navigation>

@@ -66,7 +66,8 @@ class HomePaketWisataAdapter(ctx: Context): BaseAdapter() {
         val listProv = paketWisataList[position].tempat_wisata_data?.map { it.provinsi }
         var listProvNew = listProv?.distinct()
         txtNamaPaket.text = paketWisataList[position].nama
-        txtDestinasi.text = listProvNew?.joinToString()
+//        txtDestinasi.text = listProvNew?.joinToString()
+        txtDestinasi.text = paketWisataList[position].tempat_wisata_data?.size.toString() + " objek wisata tujuan"
 
         txtWaktu.text = "1 hari"
 

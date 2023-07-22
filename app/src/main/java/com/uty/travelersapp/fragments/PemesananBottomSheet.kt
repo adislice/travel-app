@@ -77,7 +77,7 @@ class PemesananBottomSheet : BottomSheetDialogFragment() {
         tvSelectedId.text = "produk id terpilih : "
         selectedProduk.observe(viewLifecycleOwner) { produk ->
             tvSelectedId.text = "produk id terpilih : " + produk.id
-            btnLanjutPesan.text = "Pesan " + produk.nama
+            btnLanjutPesan.text = "Pesan"
             selectedId = produk.id!!
         }
         btnLanjutPesan.setOnClickListener {
@@ -95,10 +95,11 @@ class PemesananBottomSheet : BottomSheetDialogFragment() {
                     Log.d("kencana", "produk: " + response.data.toString())
                     response.data.forEach { produk ->
                         val infl = layoutInflater.inflate(R.layout.cardview_produk_paket_wisata, null, false)
-                        infl.findViewById<TextView>(R.id.nama_paket).text = produk.jenis_armada?.kapasitas_min.toString() + " - " + produk.jenis_armada?.kapasitas_max.toString() + ""
+//                        infl.findViewById<TextView>(R.id.nama_paket).text = produk.jenis_kendaraan?.kapasitas_min.toString() + " - " + produk.jenis_armada?.kapasitas_max.toString() + ""
+                        infl.findViewById<TextView>(R.id.nama_paket).text = ""
                         infl.findViewById<TextView>(R.id.harga_paket).text = Helper.formatRupiah(produk.harga!!)
-                        infl.findViewById<TextView>(R.id.nama_kendaraan).text = produk.jenis_armada?.nama
-                        infl.findViewById<TextView>(R.id.kapasitas_penumpang).text = produk.jenis_armada?.kapasitas_min.toString() + " - " + produk.jenis_armada?.kapasitas_max.toString() + " orang"
+                        infl.findViewById<TextView>(R.id.nama_kendaraan).text = produk.jenis_kendaraan?.nama
+                        infl.findViewById<TextView>(R.id.kapasitas_penumpang).text = produk.jenis_kendaraan?.jumlah_seat.toString() + " seat"
                         val cardview = infl.findViewById<MaterialCardView>(R.id.card_produk_paket_wisata)
                         cardview.setOnClickListener {
                             produkList.forEach {

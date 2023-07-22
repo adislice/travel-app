@@ -3,13 +3,10 @@ package com.uty.travelersapp
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import com.midtrans.sdk.corekit.core.MidtransSDK
 import com.midtrans.sdk.corekit.core.TransactionRequest
 import com.midtrans.sdk.corekit.core.themes.CustomColorTheme
@@ -24,29 +21,30 @@ import com.uty.travelersapp.models.Status
 import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.IntentKey
 import com.uty.travelersapp.utils.MyUser
-import com.uty.travelersapp.viewmodel.TransaksiViewModel
+import com.uty.travelersapp.viewmodel.PemesananViewModel
 
 class ProsesTransaksiActivity : AppCompatActivity() {
-    private var idTransaksi = ""
-    private val transaksiViewModel by viewModels<TransaksiViewModel>()
+    private var idPemesanan = ""
+    private val pemesananViewModel by viewModels<PemesananViewModel>()
+    private var isProcessed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_proses_transaksi)
 
-        val loadingSpinner = Helper.buildLoadingSpinner(this, "Loading", "Memuat transaksi...")
+        val loadingSpinner = Helper.buildLoadingSpinner(this, "Loading", "Memuat pemesanan...")
         
         val i = intent.getStringExtra(IntentKey.TRANSAKSI_ID)
         if (i != null) {
-            idTransaksi = i
+            idPemesanan = i
         }
 
-        if (idTransaksi.isEmpty()) {
-            makeToast("Transaksi tidak ditemukan")
+        if (idPemesanan.isEmpty()) {
+            makeToast("Pemesanan tidak ditemukan")
             finish()
         }
 
-        transaksiViewModel.getDetailTransaksi(idTransaksi).observe(this) { response ->
+        pemesananViewModel.getDetailPemesanan(idPemesanan).observe(this) { response ->
 
             when(response) {
                 is Response.Loading -> {
@@ -54,9 +52,10 @@ class ProsesTransaksiActivity : AppCompatActivity() {
                 }
                 is Response.Success -> {
                     loadingSpinner.dismiss()
-                    val namaProdukPaket = "${response.data?.paket_wisata?.nama} (${response.data?.produk?.nama})"
+                    val namaProdukPaket = "${response.data?.paket_wisata?.nama} (${response.data?.jenis_kendaraan?.nama})"
 
-                    if (response.data?.payment_url != null && response.data.status == Status.PENDING) {
+                    if (response.data?.payment_url != null && response.data.status == Status.PENDING && !isProcessed) {
+                        isProcessed = true
                         val transactionUrl = response.data.payment_url
                         val webView: WebView = findViewById(R.id.webview_pembayaran)
                         webView.webViewClient = object: WebViewClient() {
@@ -68,6 +67,7 @@ class ProsesTransaksiActivity : AppCompatActivity() {
                                 Log.d("kencana", "url: " + url.toString())
                                 if (url != null) {
                                     if (url.contains("#/406")) {
+                                        isProcessed = true
                                         finish()
                                     }
                                 }
@@ -76,10 +76,12 @@ class ProsesTransaksiActivity : AppCompatActivity() {
                         }
                         webView.settings.javaScriptEnabled = true
                         webView.loadUrl(transactionUrl)
-                    } else {
+                        isProcessed = true
+                    }
+                    if(response.data.status == Status.DIPROSES){
                         buildUiKit()
                         val midtrans = MidtransSDK.getInstance()
-                        val transactionRequest = TransactionRequest(response.data?.kode_transaksi!!, response.data.total_bayar!!, "IDR")
+                        val transactionRequest = TransactionRequest(response.data?.kode_pemesanan!!, response.data.total_bayar!!, "IDR")
                         val customerDetail = CustomerDetails()
                         customerDetail.customerIdentifier = response.data.user?.id
                         customerDetail.firstName = response.data.user?.nama
@@ -104,7 +106,7 @@ class ProsesTransaksiActivity : AppCompatActivity() {
                         val itemDetails = arrayListOf<ItemDetails>()
                         itemDetails.add(ItemDetails(response.data.produk?.id, response.data.produk?.harga!!, 1, namaProdukPaket))
                         if (!response.data.promo?.kode.isNullOrEmpty()) {
-                            val namaPromo =  "Promo Diskon " + response.data.promo?.diskon_persen + "%"
+                            val namaPromo =  "Promo Diskon " + response.data.promo?.persen + "%"
                             itemDetails.add(ItemDetails(response.data.promo?.kode, -response.data.promo?.potongan!!, 1, namaPromo))
                         }
                         transactionRequest.itemDetails = itemDetails
@@ -115,12 +117,17 @@ class ProsesTransaksiActivity : AppCompatActivity() {
                         // launch transaction
                         midtrans.startPaymentUiFlow(this)
                     }
+                    if(response.data.status == Status.SELESAI) {
+                        finish()
+                    }
 
 
                 }
                 is Response.Failure -> {
-                    makeToast("Error mengambil transaksi: " + response.errorMessage)
+                    makeToast("Error mengambil pemesanan: " + response.errorMessage)
                 }
+
+                else -> {}
             }
         }
 

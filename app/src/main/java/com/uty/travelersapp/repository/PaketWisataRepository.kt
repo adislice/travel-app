@@ -1,19 +1,17 @@
 package com.uty.travelersapp.repository
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.snapshots
 import com.google.firebase.firestore.ktx.toObject
-import com.uty.travelersapp.models.JenisArmada
+import com.uty.travelersapp.models.JenisKendaraan
 import com.uty.travelersapp.models.PaketWisataItem
 import com.uty.travelersapp.models.ProdukPaketWisata
 import com.uty.travelersapp.models.Response
 import com.uty.travelersapp.models.TempatWisataArrayItem
 import com.uty.travelersapp.models.TempatWisataItem
 import com.uty.travelersapp.utils.FirebaseUtils
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -44,7 +42,6 @@ class PaketWisataRepository {
             }
             paketWisataList.postValue(_pwList)
         }
-
     }
 
     fun getAllPaketWisataRealtime(limit: Int = 0) = dbCol.apply{
@@ -59,11 +56,12 @@ class PaketWisataRepository {
             var resProduk = snap.reference.collection("produk").get().await()
             var listProduk = resProduk.toObjects(ProdukPaketWisata::class.java)
             for (produk in listProduk) {
-                val armadaRef = produk.jenis_armada_ref
-                val armadaResult = armadaRef?.get()?.await()
+                val jenisKendaraanRef = FirebaseUtils.firebaseDatabase.collection("jenis_kendaraan").document(produk.jenis_kendaraan_id!!)
+
+                val armadaResult = jenisKendaraanRef?.get()?.await()
                 if (armadaResult != null) {
                     if (armadaResult.exists()) {
-                        produk.jenis_armada = armadaResult.toObject(JenisArmada::class.java)
+                        produk.jenis_kendaraan = armadaResult.toObject(JenisKendaraan::class.java)
                     }
                 }
             }
@@ -103,14 +101,15 @@ class PaketWisataRepository {
     fun getProdukPaketWisata(idPaket: String) = flow {
         val _produkList = ArrayList<ProdukPaketWisata>()
         emit(Response.Loading())
-        val produkCol = dbCol.document(idPaket).collection("produk")
+        val produkCol = dbCol.document(idPaket).collection("produk").whereEqualTo("is_deleted", false)
         val result = produkCol.get().await()
         result.documents.forEach { doc ->
             val produkObject = doc.toObject(ProdukPaketWisata::class.java)!!
-            val jenisPaketDoc = produkObject.jenis_armada_ref?.get()?.await()!!
+            val jenisKendaraanRef = FirebaseUtils.firebaseDatabase.collection("jenis_kendaraan").document(produkObject.jenis_kendaraan_id!!)
+            val jenisPaketDoc = jenisKendaraanRef.get()?.await()!!
             if (jenisPaketDoc.exists()){
-                val jenisObject = jenisPaketDoc.toObject(JenisArmada::class.java)
-                produkObject.jenis_armada = jenisObject
+                val jenisObject = jenisPaketDoc.toObject(JenisKendaraan::class.java)
+                produkObject.jenis_kendaraan = jenisObject
             }
             _produkList.add(produkObject)
         }

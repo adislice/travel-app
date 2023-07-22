@@ -206,6 +206,7 @@ tools:context=".fragments.paket_wisata.PesanPaketWisataFragment">
                 android:layout_height="wrap_content"
                 android:hint="Tanggal"
                 app:hintEnabled="false"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium"
                 android:layout_marginBottom="20dp"
                 app:startIconDrawable="@drawable/outline_calendar_month_24"
                 >
@@ -236,6 +237,7 @@ tools:context=".fragments.paket_wisata.PesanPaketWisataFragment">
                 android:hint="Nama"
                 app:hintEnabled="false"
                 android:layout_marginBottom="20dp"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium"
                 app:startIconDrawable="@drawable/ic_outline_person_outline_24"
                 >
 
@@ -263,6 +265,7 @@ tools:context=".fragments.paket_wisata.PesanPaketWisataFragment">
                 android:layout_height="wrap_content"
                 android:hint="Nomor Telepon"
                 app:hintEnabled="false"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium"
                 android:layout_marginBottom="20dp"
                 app:startIconDrawable="@drawable/outline_phone_24"
                 >
@@ -304,6 +307,7 @@ tools:context=".fragments.paket_wisata.PesanPaketWisataFragment">
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:hintEnabled="false"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium"
                 android:layout_marginBottom="20dp"
                 app:startIconDrawable="@drawable/outline_location_on_24"
                 android:gravity="top"
@@ -322,12 +326,10 @@ tools:context=".fragments.paket_wisata.PesanPaketWisataFragment">
                 android:id="@+id/btn_lanjut_pesan"
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
-                app:shapeAppearance="@style/ShapeAppearance.App.Button"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Medium"
                 android:text="Lanjutkan Pemesanan"/>
 
         </LinearLayout>
-
-
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

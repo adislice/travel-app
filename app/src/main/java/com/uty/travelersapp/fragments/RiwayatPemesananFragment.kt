@@ -5,24 +5,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.uty.travelersapp.R
 import com.uty.travelersapp.adapters.ListRiwayatPemesananAdapter
 import com.uty.travelersapp.databinding.FragmentRiwayatPemesananBinding
 import com.uty.travelersapp.extensions.Helpers.Companion.makeToast
 import com.uty.travelersapp.models.Response
 import com.uty.travelersapp.utils.MyUser
-import com.uty.travelersapp.viewmodel.TransaksiViewModel
+import com.uty.travelersapp.viewmodel.PemesananViewModel
 
 class RiwayatPemesananFragment : Fragment() {
     private var _binding: FragmentRiwayatPemesananBinding? = null
     private val binding get() = _binding!!
     private lateinit var rvRiwayat: RecyclerView
     private lateinit var riwayatAdapter: ListRiwayatPemesananAdapter
-    private val transaksiViewModel by activityViewModels<TransaksiViewModel>()
+    private val pemesananViewModel by activityViewModels<PemesananViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +44,7 @@ class RiwayatPemesananFragment : Fragment() {
             requireContext().makeToast("User id tidak ada")
             return
         }
-        transaksiViewModel.getUserTransaksi(userId).observe(viewLifecycleOwner) { response ->
+        pemesananViewModel.getUserPemesanan(userId).observe(viewLifecycleOwner) { response ->
             when(response) {
                 is Response.Success -> {
                     riwayatAdapter.updateList(response.data)

@@ -1,61 +1,34 @@
 package com.uty.travelersapp.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.maps.model.LatLng
-import com.uty.travelersapp.models.PaketWisataItem
-import com.uty.travelersapp.models.ProdukPaketWisata
-import com.uty.travelersapp.models.TempatWisataArrayItem
+import androidx.lifecycle.liveData
+import com.uty.travelersapp.models.Pemesanan
+import com.uty.travelersapp.repository.PemesananRepository
+import kotlinx.coroutines.Dispatchers
 
 class PemesananViewModel: ViewModel() {
-    private val _tanggalPerjalanan = MutableLiveData<String>("")
-    val tanggalPerjalanan: LiveData<String> = _tanggalPerjalanan
+    private val repository: PemesananRepository
 
-    private val _namaPemesan = MutableLiveData<String>("")
-    val namaPemesan: LiveData<String> = _namaPemesan
-
-    private val _noTelpPemesan = MutableLiveData<String>("")
-    val noTelpPemesan: LiveData<String> = _noTelpPemesan
-
-    private val _lokasiPenjemputan = MutableLiveData<LatLng>()
-    val lokasiPenjemputan: LiveData<LatLng> = _lokasiPenjemputan
-
-    private val _paketWisataTerpilih = MutableLiveData<PaketWisataItem>()
-    val paketWisataTerpilih: LiveData<PaketWisataItem> = _paketWisataTerpilih
-
-    private val _produkTerpilih = MutableLiveData<ProdukPaketWisata>()
-    val produkTerpilih: LiveData<ProdukPaketWisata> = _produkTerpilih
-
-    private val _tujuanWisata = MutableLiveData<ArrayList<TempatWisataArrayItem>>()
-    val tujuanWisata: LiveData<ArrayList<TempatWisataArrayItem>> = _tujuanWisata
-
-    fun setTanggalPerjalanan(value: String) {
-        _tanggalPerjalanan.value = value
+    init {
+        repository = PemesananRepository().getInstance()
     }
 
-    fun setNamaPemesan(value: String) {
-        _namaPemesan.value = value
+    fun insertPemesanan(userId: String, dataPemesanan: Pemesanan) = liveData(Dispatchers.IO) {
+        repository.insertPemesanan(userId, dataPemesanan).collect { response ->
+            emit(response)
+        }
     }
 
-    fun setNoTelpPemesan(value: String) {
-        _noTelpPemesan.value = value
+    fun getUserPemesanan(userId: String) = liveData(Dispatchers.IO) {
+        repository.getUserPemesanan(userId).collect {response ->
+            emit(response)
+        }
     }
 
-    fun setLokasiPenjemputan(value: LatLng) {
-        _lokasiPenjemputan.value = value
-    }
-
-    fun setPaketWisataTerpilih(value: PaketWisataItem) {
-        _paketWisataTerpilih.value = value
-    }
-
-    fun setProdukTerpilih(value: ProdukPaketWisata) {
-        _produkTerpilih.value = value
-    }
-
-    fun setTujuanWisata(value: ArrayList<TempatWisataArrayItem>) {
-        _tujuanWisata.value = value
+    fun getDetailPemesanan(idPemesanan: String) = liveData(Dispatchers.IO) {
+        repository.getDetailPemesananRealtime(idPemesanan).collect { response ->
+            emit(response)
+        }
     }
 
 

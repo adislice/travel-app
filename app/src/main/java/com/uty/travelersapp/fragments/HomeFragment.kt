@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,13 +16,18 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.switchMap
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import coil.load
+import com.bumptech.glide.Glide
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -29,6 +35,7 @@ import com.uty.travelersapp.PaketWisataBaseActivity
 import com.uty.travelersapp.R
 import com.uty.travelersapp.adapters.HomeCarouselWisataAdapter
 import com.uty.travelersapp.databinding.FragmentHomeBinding
+import com.uty.travelersapp.models.Response
 import com.uty.travelersapp.models.TempatWisataItem
 import com.uty.travelersapp.utils.FirebaseUtils.firebaseAuth
 import com.uty.travelersapp.utils.Helper
@@ -37,6 +44,7 @@ import com.uty.travelersapp.utils.LocationUtil
 import com.uty.travelersapp.utils.PermissionUtils
 import com.uty.travelersapp.viewmodel.PaketWisataViewModel
 import com.uty.travelersapp.viewmodel.TempatWisataViewModel
+import com.uty.travelersapp.viewmodel.UserViewModel
 import kotlinx.coroutines.delay
 
 class HomeFragment : Fragment() {
@@ -46,6 +54,7 @@ class HomeFragment : Fragment() {
     private lateinit var tempatWisataViewModel: TempatWisataViewModel
     private lateinit var tempatWisataViewPager: ViewPager2
     private lateinit var tempatWisataCarouselAdapter: HomeCarouselWisataAdapter
+    private val userViewModel by activityViewModels<UserViewModel>()
 
     // lokasi
     private var gpsLoc: Location? = null
@@ -59,6 +68,7 @@ class HomeFragment : Fragment() {
     private var doubleBackExitPressedOnce = false
     private val paketWisataViewModel by activityViewModels<PaketWisataViewModel>()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val isLifted = MutableLiveData<Boolean>(false)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -79,16 +89,28 @@ class HomeFragment : Fragment() {
         binding.appbarHome.isLifted = true
         binding.appbarHome.alpha = 0.0f
 
-        binding.scrollContent.setOnScrollChangeListener { v, _, scrollY, _, oldScrollY ->
 
-            var woi = scrollY / 558f
-            val newKoma = (woi - 0.8f) / 0.1f
-            binding.appbarHome.alpha = when {
-                newKoma <= 0 -> 0.0f
-                newKoma >= 1.0f -> 1.0f
-                else -> newKoma
+
+        binding.scrollContent.setOnScrollChangeListener { v, _, scrollY, _, oldScrollY ->
+            var woi = scrollY / 500f
+
+            isLifted.value = woi >= 1
+//            binding.appbarHome.alpha = when {
+//                newKoma <= 0 -> 0.0f
+//                newKoma >= 1.0f -> 1.0f
+//                else -> newKoma
+//            }
+        }
+
+        isLifted.distinctUntilChanged().observe(viewLifecycleOwner) {
+            if (it) {
+                binding.appbarHome.animate().alpha(1.0f)
+            } else {
+                binding.appbarHome.animate().alpha(0.0f)
             }
         }
+
+        initUser()
 
         binding.btnLihatsemuaTempatwisata.setOnClickListener {
             val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav_view)
@@ -151,18 +173,25 @@ class HomeFragment : Fragment() {
                 var destinasi = ""
                 val listProv = item.tempat_wisata_data?.map { it.provinsi }
                 val listProvNew = listProv?.distinct()
-                itemView.findViewById<TextView>(R.id.txt_destinasi).text = listProvNew?.joinToString()
+                itemView.findViewById<TextView>(R.id.txt_destinasi).text = item.tempat_wisata_data?.size.toString() + " tempat wisata tujuan"
                 var harga = ""
                 itemView.findViewById<TextView>(R.id.txt_harga).text = "Mulai dari -"
                 item.produk?.let {
                     var produkList = item.produk!!.sortedBy { it.harga }
                     val hargaStr = produkList.first().harga?.let { it1 -> Helper.formatRupiah(it1) }
-                    var hargaJmlSeat = produkList.first().jenis_armada?.kapasitas_max.toString() + " seat"
+                    var hargaJmlSeat = produkList.first().jenis_kendaraan?.jumlah_seat.toString() + " seat"
                     var hargaPerJmlSeat = "$hargaStr / $hargaJmlSeat"
                     itemView.findViewById<TextView>(R.id.txt_harga).text = "Mulai dari ${hargaPerJmlSeat}"
                 }
+                item.waktu_perjalanan?.let {
+                    var waktu = ""
+                    waktu += it.hari.toString() + " hari"
+                    if (!it.malam.equals(0)){
+                        waktu += " " + it.malam.toString() + " malam"
+                    }
+                    itemView.findViewById<TextView>(R.id.txt_waktu).text = waktu
+                }
 
-                itemView.findViewById<TextView>(R.id.txt_waktu).text = "1 hari"
                 val imgView = itemView.findViewById<ImageView>(R.id.img_thumbnail)
                 imgView.load(item.foto?.firstOrNull()) {
                     placeholder(R.drawable.loading_image_placeholder)
@@ -241,6 +270,40 @@ class HomeFragment : Fragment() {
 
         setCurrentItem(nextItem, true)
         scrollIndefinitely(interval)
+    }
+
+    fun initUser() {
+        binding.imgHomeProfilePicture.setOnClickListener {
+            val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+            bottomNav.selectedItemId = R.id.navitem_profil
+        }
+        val user = firebaseAuth.currentUser
+        user?.let { currUser ->
+            userViewModel.setUser(user.uid)
+            userViewModel.userDetailData.observe(viewLifecycleOwner) { response ->
+
+                when (response) {
+                    is Response.Loading -> {}
+                    is Response.Success -> {
+                        binding.txtDisplayName.text = response.data.nama
+                        response.data.profile_picture?.let { pp ->
+                           binding.imgHomeProfilePicture.load(pp) {
+                               crossfade(true)
+                           }
+                            binding.imgHomeProfilePicture.colorFilter = null
+                            binding.imgHomeProfilePicture.imageTintList = null
+
+                        }
+                    }
+                    is Response.Failure -> {
+                        Log.d("kencana", response.errorMessage)
+                    }
+
+                    else -> {}
+                }
+            }
+
+        }
     }
 
 

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import coil.load
 import com.bumptech.glide.Glide
 import com.uty.travelersapp.MainActivity
 import com.uty.travelersapp.R
@@ -83,12 +84,16 @@ class ProfilFragment : Fragment() {
                         binding.txtProfilNama.text = response.data.nama
                         binding.txtProfilEmail.text = response.data.email
                         response.data.profile_picture?.let { pp ->
-                            Glide.with(requireActivity())
-                                .load(pp)
-                                .centerCrop()
-                                .placeholder(R.drawable.loading_image_placeholder)
-                                .error(R.drawable.image_placeholder)
-                                .into(binding.imgProfil)
+                            binding.imgProfil.load(pp) {
+                                placeholder(R.drawable.ic_profile_pic_placeholder)
+                                crossfade(true)
+                            }
+//                            Glide.with(requireActivity())
+//                                .load(pp)
+//                                .centerCrop()
+//                                .placeholder(R.drawable.loading_image_placeholder)
+//                                .error(R.drawable.image_placeholder)
+//                                .into(binding.imgProfil)
                             binding.imgProfil.setColorFilter(null)
                             binding.imgProfil.imageTintList = null
 

@@ -1,51 +1,39 @@
 package com.uty.travelersapp.fragments.paket_wisata
 
-import android.animation.LayoutTransition
 import android.app.AlertDialog
-import android.app.ProgressDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.transition.AutoTransition
-import android.transition.ChangeBounds
-import android.transition.TransitionManager
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.marginBottom
-import androidx.core.view.setPadding
-import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.uty.travelersapp.R
 import com.uty.travelersapp.databinding.FragmentCheckoutBinding
 import com.uty.travelersapp.models.Response
 import com.uty.travelersapp.models.Status
 import com.uty.travelersapp.models.TempatWisataArrayItem
-import com.uty.travelersapp.models.Transaksi
-import com.uty.travelersapp.models.TransaksiKeberangkatan
-import com.uty.travelersapp.models.TransaksiPaketWisata
-import com.uty.travelersapp.models.TransaksiProduk
-import com.uty.travelersapp.models.TransaksiPromo
-import com.uty.travelersapp.models.TransaksiUser
+import com.uty.travelersapp.models.Pemesanan
+import com.uty.travelersapp.models.PemesananJenisKendaraan
+import com.uty.travelersapp.models.PemesananKeberangkatan
+import com.uty.travelersapp.models.PemesananPaketWisata
+import com.uty.travelersapp.models.PemesananProduk
+import com.uty.travelersapp.models.PemesananPromo
+import com.uty.travelersapp.models.PemesananUser
 import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.IntentKey
 import com.uty.travelersapp.utils.MyUser
+import com.uty.travelersapp.viewmodel.AlurPemesananViewModel
 import com.uty.travelersapp.viewmodel.PemesananViewModel
-import com.uty.travelersapp.viewmodel.TransaksiViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -59,14 +47,14 @@ class CheckoutFragment : Fragment() {
     private val binding get() = _binding!!
     private val tujuanWisata = arrayListOf<String>()
     private var isTujuanWisataExpanded = true
-    private val pemesananViewModel: PemesananViewModel by activityViewModels()
+    private val alurPemesananViewModel: AlurPemesananViewModel by activityViewModels()
     private val tujuanWisataList = arrayListOf<TempatWisataArrayItem>()
     private var hargaProduk = MutableLiveData<Double>(0.0)
     private var diskon = MutableLiveData<Double>(0.0)
     private var totalBayar = MutableLiveData<Double>(0.0)
     private var daftarDiskon = arrayListOf<Promo>()
     private var promoTerpasang = Promo("", 0)
-    private val transaksiViewModel by activityViewModels<TransaksiViewModel>()
+    private val pemesananViewModel by activityViewModels<PemesananViewModel>()
 
     data class Promo(val kode: String, val persen: Int)
 
@@ -112,23 +100,23 @@ class CheckoutFragment : Fragment() {
         diskon.value = 0.0
 
         // get data paket wisata dari viewmodel
-        pemesananViewModel.paketWisataTerpilih.observe(viewLifecycleOwner) { pw ->
+        alurPemesananViewModel.paketWisataTerpilih.observe(viewLifecycleOwner) { pw ->
             binding.txtNamaPaket.text = pw.nama
         }
         binding.txtNamaProduk.visibility = View.GONE
         // get data produk paket wisata dari viewmodel
-        pemesananViewModel.produkTerpilih.observe(viewLifecycleOwner) { produk ->
-            val namaPaket = pemesananViewModel.paketWisataTerpilih.value?.nama
+        alurPemesananViewModel.produkTerpilih.observe(viewLifecycleOwner) { produk ->
+            val namaPaket = alurPemesananViewModel.paketWisataTerpilih.value?.nama
             binding.txtHargaProduk.text = Helper.formatRupiah(produk.harga!!)
-            binding.txtTransaksiNamaPaket.text = "${namaPaket} (${produk?.jenis_armada?.kapasitas_min.toString()} - ${produk?.jenis_armada?.kapasitas_max.toString()} orang)"
+            binding.txtTransaksiNamaPaket.text = "${namaPaket} (${produk?.jenis_kendaraan?.nama})"
             binding.txtTransaksiHargaPaket.text = Helper.formatRupiah(produk.harga)
             hargaProduk.value = produk.harga!!
-            binding.txtNamaArmada.text = produk.jenis_armada?.nama
-            binding.txtJumlahPenumpang.text = "${produk?.jenis_armada?.kapasitas_min.toString()} - ${produk?.jenis_armada?.kapasitas_max.toString()} penumpang"
+            binding.txtNamaArmada.text = produk.jenis_kendaraan?.nama
+            binding.txtJumlahPenumpang.text = "${produk?.jenis_kendaraan?.jumlah_seat} seat"
             hitungTotalBayar()
         }
 
-        pemesananViewModel.tujuanWisata.observe(viewLifecycleOwner) { tujuan ->
+        alurPemesananViewModel.tujuanWisata.observe(viewLifecycleOwner) { tujuan ->
             tujuanWisataList.clear()
 //            tujuan.forEach { item ->
 //                tujuanWisataList.add(item)
@@ -148,20 +136,20 @@ class CheckoutFragment : Fragment() {
 
         }
 
-        pemesananViewModel.namaPemesan.observe(viewLifecycleOwner) {
+        alurPemesananViewModel.namaPemesan.observe(viewLifecycleOwner) {
             binding.txtNamaPemesan.text = it
         }
 
-        pemesananViewModel.noTelpPemesan.observe(viewLifecycleOwner) {
+        alurPemesananViewModel.noTelpPemesan.observe(viewLifecycleOwner) {
             binding.txtNotelpPemesan.text = it
         }
 
-        pemesananViewModel.tanggalPerjalanan.observe(viewLifecycleOwner) {
+        alurPemesananViewModel.tanggalPerjalanan.observe(viewLifecycleOwner) {
             val formatted = Helper.formatTanggalLengkap(it)
             binding.txtTglKeberangkatan.text = formatted
         }
 
-        pemesananViewModel.lokasiPenjemputan.observe(viewLifecycleOwner) {
+        alurPemesananViewModel.lokasiPenjemputan.observe(viewLifecycleOwner) {
             val address = Helper.getAddress(requireActivity(), it.latitude, it.longitude)
             binding.txtAlamatJemput.text = address
         }
@@ -258,54 +246,61 @@ class CheckoutFragment : Fragment() {
         val sekarang = LocalDateTime.now()
         val waktu24Jam = sekarang.plusHours(24)
         val batasBayar = Date.from(waktu24Jam.atZone(ZoneId.systemDefault()).toInstant())
-        val pw = TransaksiPaketWisata(
-            id = pemesananViewModel.paketWisataTerpilih.value?.id,
-            nama = pemesananViewModel.paketWisataTerpilih.value?.nama,
-            foto = pemesananViewModel.paketWisataTerpilih.value?.foto?.get(0)
+        val pw = PemesananPaketWisata(
+            id = alurPemesananViewModel.paketWisataTerpilih.value?.id,
+            nama = alurPemesananViewModel.paketWisataTerpilih.value?.nama,
+            foto = alurPemesananViewModel.paketWisataTerpilih.value?.foto?.get(0)
         )
-        val produk = TransaksiProduk(
-            nama = pemesananViewModel.produkTerpilih.value?.jenis_armada?.kapasitas_min.toString() + " - " + pemesananViewModel.produkTerpilih.value?.jenis_armada?.kapasitas_max.toString() + " orang",
-            harga = pemesananViewModel.produkTerpilih.value?.harga,
-            id = pemesananViewModel.produkTerpilih.value?.id
+        val produk = PemesananProduk(
+            harga = alurPemesananViewModel.produkTerpilih.value?.harga,
+            id = alurPemesananViewModel.produkTerpilih.value?.id
         )
-        val promo = TransaksiPromo(
+        val promo = PemesananPromo(
             id = "",
+            nama = promoTerpasang.kode,
             kode = promoTerpasang.kode,
-            diskon_persen = promoTerpasang.persen.toDouble(),
+            persen = promoTerpasang.persen.toDouble(),
             potongan = diskon.value
         )
-        val user = TransaksiUser(
+        val jenisKendaraan = PemesananJenisKendaraan(
+            id = alurPemesananViewModel.produkTerpilih.value?.jenis_kendaraan?.id,
+            nama = alurPemesananViewModel.produkTerpilih.value?.jenis_kendaraan?.nama,
+            jumlah_seat = alurPemesananViewModel.produkTerpilih.value?.jenis_kendaraan?.jumlah_seat
+        )
+        val user = PemesananUser(
             id = MyUser.user?.id,
-            nama = pemesananViewModel.namaPemesan.value,
-            no_telp = pemesananViewModel.noTelpPemesan.value
+            nama = alurPemesananViewModel.namaPemesan.value,
+            no_telp = alurPemesananViewModel.noTelpPemesan.value,
+            email = MyUser.user?.email
         )
         val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val dateKeberangkatan = inputFormat.parse(pemesananViewModel.tanggalPerjalanan.value!!)
-        val lokLat = if(pemesananViewModel.lokasiPenjemputan.value?.latitude != null) pemesananViewModel.lokasiPenjemputan.value?.latitude.toString() else "0"
-        val lokLong = if(pemesananViewModel.lokasiPenjemputan.value?.longitude != null) pemesananViewModel.lokasiPenjemputan.value?.longitude.toString() else "0"
-        val keberangkatan = TransaksiKeberangkatan(
+        val dateKeberangkatan = inputFormat.parse(alurPemesananViewModel.tanggalPerjalanan.value!!)
+        val lokLat = if(alurPemesananViewModel.lokasiPenjemputan.value?.latitude != null) alurPemesananViewModel.lokasiPenjemputan.value?.latitude.toString() else "0"
+        val lokLong = if(alurPemesananViewModel.lokasiPenjemputan.value?.longitude != null) alurPemesananViewModel.lokasiPenjemputan.value?.longitude.toString() else "0"
+        val keberangkatan = PemesananKeberangkatan(
             dateKeberangkatan,
             lokLat,
             lokLong
         )
-        val dataTransaksi = Transaksi(
-            kode_transaksi = Helper.generateTransactionCode(),
-            tanggal = Date(),
+
+        val dataTransaksi = Pemesanan(
+            kode_pemesanan = Helper.generateTransactionCode(),
             total_bayar = totalBayar.value,
-            batas_pembayaran = batasBayar,
-            status = Status.BELUM_BAYAR,
+            status = Status.DIPROSES,
             paket_wisata = pw,
             produk = produk,
             promo = promo,
             user = user,
-            keberangkatan = keberangkatan
+            keberangkatan = keberangkatan,
+            jenis_kendaraan = jenisKendaraan
         )
-        transaksiViewModel.insertTransaksi(MyUser.user?.nama!!, dataTransaksi).observe(viewLifecycleOwner) { response ->
+        pemesananViewModel.insertPemesanan(MyUser.user?.nama!!, dataTransaksi).observe(viewLifecycleOwner) { response ->
             when(response) {
                 is Response.Loading -> {
                     spinner.show()
                 }
                 is Response.Success -> {
+                    Log.d("kencana", "Membuka fragment transaksi")
                     val bundle = Bundle()
                     bundle.putString(IntentKey.TRANSAKSI_ID, response.data)
                     findNavController().navigate(R.id.action_checkoutFragment_to_transaksiFragment, bundle)

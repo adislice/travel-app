@@ -37,7 +37,7 @@ import java.util.regex.Pattern
 class RegisterFragment : Fragment() {
     private lateinit var binding: FragmentRegisterBinding
     private lateinit var userName: String
-    private lateinit var userUsername: String
+    private lateinit var userNoTelp: String
     private lateinit var userEmail: String
     private lateinit var userPassword: String
     private lateinit var createAccountInputsArray: Array<TextInputLayout>
@@ -58,7 +58,7 @@ class RegisterFragment : Fragment() {
 
         createAccountInputsArray = arrayOf(
             binding.inputNama,
-            binding.inputUsername,
+            binding.inputNoTelp,
             binding.inputEmail,
             binding.inputPassword,
             binding.inputPasswordConfirm
@@ -253,7 +253,8 @@ class RegisterFragment : Fragment() {
         val userModel = mapOf(
             "nama" to userName,
             "email" to email!!,
-            "role" to "customer",
+            "role" to "CUSTOMER",
+            "no_telp" to userNoTelp,
             "created_at" to FieldValue.serverTimestamp()
         )
         firebaseDatabase.collection("users").document(uid).set(userModel)

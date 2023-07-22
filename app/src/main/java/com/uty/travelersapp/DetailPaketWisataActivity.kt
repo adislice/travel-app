@@ -27,7 +27,6 @@ class DetailPaketWisataActivity : AppCompatActivity() {
     private lateinit var rvTujuanWisata: RecyclerView
     private lateinit var tujuanWisataAdapter: ListTujuanWisataAdapter
     private lateinit var pwRepository: PaketWisataRepository
-//    private lateinit var paketWisataViewModel: PaketWisataViewModel
     private lateinit var googleMap: GoogleMap
     private lateinit var markerList: ArrayList<Marker>
     private lateinit var mapFragment: SupportMapFragment

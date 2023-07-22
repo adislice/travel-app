@@ -44,7 +44,7 @@ class ListTempatWisataAdapter: RecyclerView.Adapter<ListTempatWisataAdapter.List
         var jarak = "5 km"
 
         holder.nama.text = model.nama
-        holder.lokasi.text = model.alamat
+        holder.lokasi.text = model.kota + ", " + model.provinsi
 //        Glide.with(holder.itemView.context)
 //            .load(model.foto?.firstOrNull())
 //            .centerCrop()

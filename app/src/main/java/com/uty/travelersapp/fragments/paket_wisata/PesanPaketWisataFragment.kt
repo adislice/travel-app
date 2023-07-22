@@ -6,11 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.view.MarginLayoutParamsCompat
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -32,15 +29,13 @@ import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.IntentKey
 import com.uty.travelersapp.utils.MyUser
 import com.uty.travelersapp.viewmodel.PaketWisataViewModel
-import com.uty.travelersapp.viewmodel.PemesananViewModel
+import com.uty.travelersapp.viewmodel.AlurPemesananViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.Calendar
 import java.util.Locale
 
 
@@ -51,7 +46,7 @@ class PesanPaketWisataFragment : Fragment() {
     private var produkId: String = ""
     private var selectedProduk: ProdukPaketWisata? = null
     private var tanggalPerjalanan: Long = 0
-    private val pemesananViewModel: PemesananViewModel by activityViewModels()
+    private val alurPemesananViewModel: AlurPemesananViewModel by activityViewModels()
 
     private var nama = MutableStateFlow("")
     private var tanggal = MutableStateFlow("")
@@ -101,14 +96,14 @@ class PesanPaketWisataFragment : Fragment() {
             when(response){
                 is Response.Success -> {
                     val selected = response.data.find { item -> item.id == produkId }
-                    pemesananViewModel.setProdukTerpilih(selected!!)
+                    alurPemesananViewModel.setProdukTerpilih(selected!!)
                     this.selectedProduk = selected
-                    binding.kirara.text = "Produk paket wisata dipilih: " + selected?.nama
+                    binding.kirara.text = "Produk paket wisata dipilih: " + selected?.jenis_kendaraan?.nama
 //                    binding.txtNamaProduk.text = selected?.nama
                     binding.txtNamaProduk.visibility = View.GONE
                     binding.txtHargaProduk.text = "Rp. " + selected?.harga.toString()
-                    binding.txtNamaArmada.text = selected?.jenis_armada?.nama
-                    binding.txtJumlanPenumpang.text = "${selected?.jenis_armada?.kapasitas_min.toString()} - ${selected?.jenis_armada?.kapasitas_max.toString()} penumpang"
+                    binding.txtNamaArmada.text = selected?.jenis_kendaraan?.nama
+                    binding.txtJumlanPenumpang.text = "${selected?.jenis_kendaraan?.jumlah_seat.toString()} seat"
                 }
 
                 else -> {}
@@ -121,7 +116,7 @@ class PesanPaketWisataFragment : Fragment() {
         paketWisataViewModel.getDetailPaketWisata.observe(viewLifecycleOwner) { response ->
             when(response) {
                 is Response.Success -> {
-                    pemesananViewModel.setPaketWisataTerpilih(response.data)
+                    alurPemesananViewModel.setPaketWisataTerpilih(response.data)
                     Glide.with(requireActivity())
                         .load(response.data.foto?.firstOrNull())
                         .placeholder(R.drawable.image_placeholder)
@@ -172,11 +167,11 @@ class PesanPaketWisataFragment : Fragment() {
                 val date = sdf.format(it)
                 binding.inputTanggal.editText?.setText(date)
                 tanggalPerjalanan = it
-                pemesananViewModel.setTanggalPerjalanan(date)
+                alurPemesananViewModel.setTanggalPerjalanan(date)
             }
         }
 
-        pemesananViewModel.tujuanWisata.observe(viewLifecycleOwner) {
+        alurPemesananViewModel.tujuanWisata.observe(viewLifecycleOwner) {
             Log.d("kencana", "destinasi: " + it.toString())
         }
 
@@ -190,10 +185,10 @@ class PesanPaketWisataFragment : Fragment() {
 //            }
         }
 
-        pemesananViewModel.tanggalPerjalanan.observe(viewLifecycleOwner) {data->
+        alurPemesananViewModel.tanggalPerjalanan.observe(viewLifecycleOwner) { data->
             binding.inputTanggal.editText?.setText(data)
         }
-        pemesananViewModel.lokasiPenjemputan.observe(viewLifecycleOwner) {data->
+        alurPemesananViewModel.lokasiPenjemputan.observe(viewLifecycleOwner) { data->
             val alamat = Helper.getAddress(requireActivity(), data.latitude, data.longitude)
             binding.inputLokasiJemput.editText?.setText(alamat)
         }
@@ -208,9 +203,9 @@ class PesanPaketWisataFragment : Fragment() {
         }
 
         binding.btnLanjutPesan.setOnClickListener {
-            pemesananViewModel.setNamaPemesan(binding.inputNama.editText!!.text.toString())
-            pemesananViewModel.setNoTelpPemesan(binding.inputNoTelp.editText!!.text.toString())
-            Log.d("kencana", "vm pemesanan: lok: " + pemesananViewModel.lokasiPenjemputan.value + ", tgl: " + pemesananViewModel.tanggalPerjalanan.value)
+            alurPemesananViewModel.setNamaPemesan(binding.inputNama.editText!!.text.toString())
+            alurPemesananViewModel.setNoTelpPemesan(binding.inputNoTelp.editText!!.text.toString())
+            Log.d("kencana", "vm pemesanan: lok: " + alurPemesananViewModel.lokasiPenjemputan.value + ", tgl: " + alurPemesananViewModel.tanggalPerjalanan.value)
             findNavController().navigate(R.id.action_pesanPaketWisataFragment_to_checkoutFragment)
         }
 
