@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ProfilFragment">
+    tools:context=".fragments.dashboard.ProfilFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar_profil"
@@ -179,47 +179,98 @@
                 android:layout_marginVertical="5dp"
                 android:clickable="true"
                 android:focusable="true"
+                android:id="@+id/btn_ubah_password"
                 >
-            <LinearLayout
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    >
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_margin="8dp"
+                        app:tint="?attr/colorOnSurfaceVariant"
+                        android:src="@drawable/ic_outline_vpn_key_24"
+                        />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="10dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceListItem"
+                            android:text="Ubah Password"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="Ubah password akun"/>
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_margin="8dp"
+                        app:tint="?attr/colorOnSurfaceVariant"
+                        android:src="@drawable/baseline_chevron_right_24"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:id="@+id/btn_about"
                 >
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_margin="8dp"
-                    app:tint="?attr/colorOnSurfaceVariant"
-                    android:src="@drawable/ic_outline_vpn_key_24"
-                    />
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="1"
-                    android:paddingVertical="8dp"
-                    android:paddingHorizontal="10dp">
-                    <TextView
-                        android:layout_width="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    >
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_margin="8dp"
+                        app:tint="?attr/colorOnSurfaceVariant"
+                        android:src="@drawable/outline_info_24"
+                        />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceListItem"
-                        android:text="Ubah Password"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:text="Ubah password akun"/>
+                        android:orientation="vertical"
+                        android:layout_weight="1"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="10dp">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceListItem"
+                            android:text="About"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:text="About Kencana Wisata"/>
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_margin="8dp"
+                        app:tint="?attr/colorOnSurfaceVariant"
+                        android:src="@drawable/baseline_chevron_right_24"/>
                 </LinearLayout>
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_margin="8dp"
-                    app:tint="?attr/colorOnSurfaceVariant"
-                    android:src="@drawable/baseline_chevron_right_24"/>
-            </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
 
@@ -235,9 +286,6 @@
                 app:iconGravity="textStart" />
 
         </LinearLayout>
-
-
-
 
     </androidx.core.widget.NestedScrollView>
 

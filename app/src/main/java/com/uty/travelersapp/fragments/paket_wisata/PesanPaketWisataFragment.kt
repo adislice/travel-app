@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
+import coil.load
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.CalendarConstraints.DateValidator
@@ -23,6 +23,7 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.uty.travelersapp.R
 import com.uty.travelersapp.databinding.FragmentPesanPaketWisataBinding
+import com.uty.travelersapp.extensions.Helpers.Companion.fixBottomInsets
 import com.uty.travelersapp.models.ProdukPaketWisata
 import com.uty.travelersapp.models.Response
 import com.uty.travelersapp.utils.Helper
@@ -117,11 +118,12 @@ class PesanPaketWisataFragment : Fragment() {
             when(response) {
                 is Response.Success -> {
                     alurPemesananViewModel.setPaketWisataTerpilih(response.data)
-                    Glide.with(requireActivity())
-                        .load(response.data.foto?.firstOrNull())
-                        .placeholder(R.drawable.image_placeholder)
-                        .error(R.drawable.image_placeholder)
-                        .into(binding.imgThumbPaket)
+
+                    binding.imgThumbPaket.load(response.data.foto?.firstOrNull()){
+                        crossfade(true)
+                        placeholder(R.drawable.image_placeholder)
+                    }
+
                     binding.txtNamaPaket.text = response.data.nama
 //                    binding.txtNamaPaket.visibility = View.GONE
 
@@ -212,20 +214,7 @@ class PesanPaketWisataFragment : Fragment() {
     }
 
     fun initializeLayout() {
-        val konten = binding.kontenPesan
-        ViewCompat.setOnApplyWindowInsetsListener(konten) { view, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            val pb = insets.bottom
-            view.setPadding(
-                view.paddingLeft,
-                view.paddingTop,
-                view.paddingRight,
-                pb
-            )
-
-            WindowInsetsCompat.CONSUMED
-        }
+        binding.kontenPesan.fixBottomInsets()
 
         binding.toolbar.navigationIcon = ContextCompat.getDrawable(requireActivity(), R.drawable.outline_arrow_back_24)
         binding.toolbar.setNavigationOnClickListener {

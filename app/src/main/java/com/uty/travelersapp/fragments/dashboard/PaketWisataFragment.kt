@@ -1,25 +1,20 @@
-package com.uty.travelersapp.fragments
+package com.uty.travelersapp.fragments.dashboard
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.ktx.toObject
 import com.uty.travelersapp.R
 import com.uty.travelersapp.adapters.ListPaketWisataAdapter
 import com.uty.travelersapp.databinding.FragmentPaketWisataBinding
 import com.uty.travelersapp.extensions.Helpers.Companion.makeToast
 import com.uty.travelersapp.models.PaketWisataItem
-import com.uty.travelersapp.utils.FirebaseUtils.firebaseDatabase
 import com.uty.travelersapp.viewmodel.PaketWisataViewModel
 
 class PaketWisataFragment : Fragment() {
@@ -84,12 +79,13 @@ class PaketWisataFragment : Fragment() {
 
         paketWisataViewModel.initAllPaketWisata()
 
-        paketWisataViewModel.allPaketWisata.observe(viewLifecycleOwner, Observer {
-            paketWisataList = ArrayList(it)
+        paketWisataViewModel.allPaketWisata.observe(viewLifecycleOwner, Observer { pwList ->
+            paketWisataList = ArrayList(pwList)
+            paketWisataList.sortBy { it.nama }
             if (searchQuery.isNotEmpty()) {
                 filterSearch(searchQuery)
             } else {
-                paketWisataAdapter.updateList(ArrayList(it))
+                paketWisataAdapter.updateList(paketWisataList)
             }
 
             binding.loadingPaketwisata.visibility = View.GONE

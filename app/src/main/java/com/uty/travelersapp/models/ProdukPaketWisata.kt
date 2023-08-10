@@ -3,7 +3,6 @@ package com.uty.travelersapp.models
 import com.google.firebase.firestore.DocumentId
 
 data class ProdukPaketWisata (
-    @DocumentId
     var id: String? = "",
     val harga: Double? = 0.0,
     val is_aktif: Boolean? = false,

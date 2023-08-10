@@ -33,7 +33,7 @@ class TempatWisataRepository {
         } else {
             ""
         }
-        return dbCol.orderBy("nama", Query.Direction.ASCENDING).where(Filter.or(
+        return dbCol.where(Filter.or(
             Filter.and(
                 Filter.greaterThanOrEqualTo("nama", search),
                 Filter.lessThanOrEqualTo("nama", search + "\uf8ff")
@@ -46,7 +46,7 @@ class TempatWisataRepository {
                 Filter.greaterThanOrEqualTo("nama", search.lowercase()),
                 Filter.lessThanOrEqualTo("nama", search.lowercase() + "\uf8ff")
             )
-        ))
+        )).orderBy("nama", Query.Direction.ASCENDING)
             .snapshots()
             .map { snapshot ->
                 Log.d("kencana", "new tempat wisata fetched")

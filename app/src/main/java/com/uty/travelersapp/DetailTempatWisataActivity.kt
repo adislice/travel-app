@@ -56,7 +56,7 @@ class DetailTempatWisataActivity : AppCompatActivity(), OnMapReadyCallback {
             detailTwViewModel = ViewModelProvider(this).get(TempatWisataViewModel::class.java)
             detailTwViewModel.getDetailTempatWisata(it.id!!)
             detailTwViewModel.detailTempatWisata.observe(this, Observer { tw ->
-                binding.txtDetailWisataLokasi.text = tw.alamat
+                binding.txtDetailWisataLokasi.text = "${tw.kota}, ${tw.provinsi}"
 
                 binding.txtDetailWisataDeskripsi.text = tw.deskripsi
                 val imageList = ArrayList<SlideModel>()

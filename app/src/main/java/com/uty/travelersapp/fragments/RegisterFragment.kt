@@ -109,6 +109,7 @@ class RegisterFragment : Fragment() {
 //                                    Toast.makeText(requireContext(), "sukses : ", Toast.LENGTH_LONG).show()
                                     val email = task.result.user?.email
                                     userName = binding.inputNama.editText?.text.toString().trim()
+                                    userNoTelp = binding.inputNoTelp.editText?.text.toString().trim()
 
                                     val profileUpdate = userProfileChangeRequest {
                                         displayName = userName

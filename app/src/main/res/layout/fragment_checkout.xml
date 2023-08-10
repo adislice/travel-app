@@ -294,6 +294,44 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="10dp"/>
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="@color/card_bg"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="15dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/outline_access_time_24"
+                                app:tint="?attr/colorPrimary"
+                                android:layout_marginRight="8dp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Jam Keberangkatan"
+                                android:layout_weight="0.5"
+                                />
+                            <TextView
+                                android:id="@+id/txt_jam_keberangkatan"
+                                android:layout_weight="0.5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Senin, 29 Juli 2023"
+                                android:textAlignment="textEnd"
+                                android:textStyle="bold"
+                                />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"/>
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
@@ -354,7 +392,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="No. Telep Pemesan"
+                                android:text="No. Telp. Pemesan"
                                 android:layout_weight="0.5"
                                 />
                             <TextView

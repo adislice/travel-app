@@ -23,7 +23,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
+import com.denzcoskun.imageslider.constants.ScaleTypes
+import com.denzcoskun.imageslider.models.SlideModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -134,12 +136,17 @@ class DetailPaketWisataFragment : Fragment(), OnMapReadyCallback {
                         binding.collapsingToolbarLayoutDetailpaket.title = pw.nama
                         binding.txtDetailWisataDeskripsi.text = pw.deskripsi
                         binding.txtDetailWisataFasilitas.text = pw.fasilitas
-                        Glide.with(this)
-                            .load(pw.foto?.firstOrNull())
-                            .centerCrop()
-                            .placeholder(R.drawable.image_placeholder)
-                            .error(R.drawable.image_placeholder)
-                            .into(binding.imgDetailPaket)
+                        binding.txtDetailWisataJamBerangkat.text = "Jam ${pw.jam_keberangkatan} dari lokasi penjemputan "
+
+//                        binding.imgDetailPaket.load(pw.foto?.firstOrNull()) {
+//                            crossfade(true)
+//                            placeholder(R.drawable.image_placeholder)
+//                        }
+                        val imageList = ArrayList<SlideModel>()
+                        pw.foto?.forEach { foto ->
+                            imageList.add(SlideModel(foto))
+                        }
+                        binding.imgDetailPaketSlider.setImageList(imageList, ScaleTypes.CENTER_CROP)
                         binding.txtJmlTujuan.text = pw.tempat_wisata?.size?.toString() + " tempat wisata"
                         pw.waktu_perjalanan?.let {
                             var waktu = ""
@@ -165,7 +172,6 @@ class DetailPaketWisataFragment : Fragment(), OnMapReadyCallback {
                             tujuanwisataList = ArrayList(sortedList)
                             alurPemesananViewModel.setTujuanWisata(ArrayList(sortedList))
                             val mapDrawable = ContextCompat.getDrawable(requireActivity(), R.drawable.ic_marker_new)!!
-                            val mapIcon = getMarkerIconFromDrawable(mapDrawable)
                             for (marker in markerList) {
                                 marker.remove()
                             }
@@ -206,7 +212,6 @@ class DetailPaketWisataFragment : Fragment(), OnMapReadyCallback {
                             }
                             val bounds = builder.build()
                             googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150))
-//                                showCurvedPolyline(markerPoints.first(), markerPoints.last(), 0.5)
                             markerPoints.forEachIndexed { idx, lat ->
                                 if (idx != markerPoints.size-1){
                                     drawCurveOnMap(markerPoints[idx], markerPoints[idx+1], 0.4)
@@ -261,20 +266,12 @@ class DetailPaketWisataFragment : Fragment(), OnMapReadyCallback {
             )
             WindowInsetsCompat.CONSUMED
         }
-
-        val windowInsetsController = WindowCompat.getInsetsController(requireActivity().window, requireActivity().window.decorView)
-
         val toolbar = binding.toolbarDetailpaket
         toolbar.setNavigationOnClickListener {
             requireActivity().finish()
         }
 
-
-        val appBarLayout = binding.appbarLayoutDetailpaket
-
         toolbar.navigationIcon = ContextCompat.getDrawable(requireActivity(), R.drawable.baseline_arrow_back_24_white)
-        var isShow = true
-        var scrollRange = -1
 
     }
 
@@ -321,66 +318,13 @@ class DetailPaketWisataFragment : Fragment(), OnMapReadyCallback {
 
     fun drawCurveOnMap(latLng1: LatLng, latLng2: LatLng, k: Double) {
 
-        //curve radius
-        var colorInt = Color.parseColor("#1E88E5")
-        var h = SphericalUtil.computeHeading(latLng1, latLng2)
-        var d = 0.0
-        val p: LatLng?
+        val polyline = googleMap.addPolyline(PolylineOptions()
+            .add(latLng1, latLng2)
+            .color(Color.parseColor("#99000000")))
 
-        //The if..else block is for swapping the heading, offset and distance
-        //to draw curve always in the upward direction
-        if (h < 0) {
-            d = SphericalUtil.computeDistanceBetween(latLng2, latLng1)
-            h = SphericalUtil.computeHeading(latLng2, latLng1)
-            //Midpoint position
-            p = SphericalUtil.computeOffset(latLng2, d * 0.5, h)
-        } else {
-            d = SphericalUtil.computeDistanceBetween(latLng1, latLng2)
+        polylineList.add(polyline)
+        return
 
-            //Midpoint position
-            p = SphericalUtil.computeOffset(latLng1, d * 0.5, h)
-        }
-
-        //Apply some mathematics to calculate position of the circle center
-        val x = (1 - k * k) * d * 0.5 / (2 * k)
-        val r = (1 + k * k) * d * 0.5 / (2 * k)
-
-        val c = SphericalUtil.computeOffset(p, x, h + 90.0)
-
-        //Calculate heading between circle center and two points
-        val h1 = SphericalUtil.computeHeading(c, latLng1)
-        val h2 = SphericalUtil.computeHeading(c, latLng2)
-
-        //Calculate positions of points on circle border and add them to polyline options
-        val numberOfPoints = 1000 //more numberOfPoints more smooth curve you will get
-        val step = (h2 - h1) / numberOfPoints
-
-        //Create PolygonOptions object to draw on map
-        val polygon = PolygonOptions()
-
-        //Create a temporary list of LatLng to store the points that's being drawn on map for curve
-        val temp = arrayListOf<LatLng>()
-
-        //iterate the numberOfPoints and add the LatLng to PolygonOptions to draw curve
-        //and save in temp list to add again reversely in PolygonOptions
-        for (i in 0 until numberOfPoints) {
-            val latlng = SphericalUtil.computeOffset(c, r, h1 + i * step)
-            polygon.add(latlng) //Adding in PolygonOptions
-            temp.add(latlng)    //Storing in temp list to add again in reverse order
-        }
-
-        //iterate the temp list in reverse order and add in PolygonOptions
-        for (i in (temp.size - 1) downTo 1) {
-            polygon.add(temp[i])
-        }
-
-        polygon.strokeColor(colorInt)
-        polygon.strokeWidth(12f)
-//        polygon.strokePattern(listOf(Dash(30f), Gap(50f))) //Skip if you want solid line
-        val result = googleMap.addPolygon(polygon)
-        polygonList.add(result)
-
-        temp.clear() //clear the temp list
     }
 
 }

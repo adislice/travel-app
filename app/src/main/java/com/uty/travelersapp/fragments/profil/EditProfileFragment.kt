@@ -1,14 +1,11 @@
-package com.uty.travelersapp.fragments
+package com.uty.travelersapp.fragments.profil
 
 import android.Manifest
 import android.app.Activity
-import android.app.Dialog
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -18,10 +15,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -30,8 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import coil.load
 import com.google.android.material.progressindicator.CircularProgressIndicatorSpec
 import com.google.android.material.progressindicator.IndeterminateDrawable
 import com.uty.travelersapp.R
@@ -78,6 +70,10 @@ class EditProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val toolbar = binding.toolbarEditprofile
+        binding.toolbarEditprofile.navigationIcon = ContextCompat.getDrawable(requireActivity(), R.drawable.outline_arrow_back_24)
+        binding.toolbarEditprofile.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
         val btnGantiFoto = binding.btnGantiFotoProfil
         btnGantiFoto.setOnClickListener {
             checkAndRequestPermission()
@@ -116,12 +112,10 @@ class EditProfileFragment : Fragment() {
                         binding.inputEditNoTelp.editText?.setText(it)
                     }
                     response.data.profile_picture?.let{
-                        Glide.with(requireContext())
-                            .load(it)
-                            .centerCrop()
-                            .placeholder(R.drawable.image_placeholder)
-                            .error(R.drawable.image_placeholder)
-                            .into(binding.imgEditProfil)
+                        binding.imgEditProfil.load(it) {
+                            crossfade(true)
+                            placeholder(R.drawable.image_placeholder)
+                        }
                         binding.imgEditProfil.setColorFilter(null)
                         binding.imgEditProfil.imageTintList = null
                     }

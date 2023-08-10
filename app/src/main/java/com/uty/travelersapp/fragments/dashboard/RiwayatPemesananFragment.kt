@@ -1,4 +1,4 @@
-package com.uty.travelersapp.fragments
+package com.uty.travelersapp.fragments.dashboard
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

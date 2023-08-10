@@ -56,7 +56,7 @@ class ListRiwayatPemesananAdapter: RecyclerView.Adapter<ListRiwayatPemesananAdap
             holder.itemView.context.startActivity(intent)
         }
         val format = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("id", "ID"))
-        holder.namaPaket.text = "${model.paket_wisata?.nama} (${model.jenis_kendaraan?.nama})"
+        holder.namaPaket.text = "${model.paket_wisata_nama} (${model.jenis_kendaraan_nama})"
 
         holder.status.text = when(model.status) {
             Status.DIPROSES -> "Diproses"
@@ -80,6 +80,11 @@ class ListRiwayatPemesananAdapter: RecyclerView.Adapter<ListRiwayatPemesananAdap
                 holder.status.setTextColor(ColorStatus.PENDING_TEXT)
                 holder.status.backgroundTintList = ColorStateList.valueOf(ColorStatus.PENDING_BG)
             }
+            Status.DIBATALKAN -> {
+                holder.status.text = "DIBATALKAN"
+                holder.status.setTextColor(ColorStatus.DIBATALKAN_TEXT)
+                holder.status.backgroundTintList = ColorStateList.valueOf(ColorStatus.DIBATALKAN_BG)
+            }
             else -> {
                 holder.status.text = "TIDAK DIKETAHUI"
                 holder.status.setTextColor(Color.GRAY)
@@ -88,9 +93,9 @@ class ListRiwayatPemesananAdapter: RecyclerView.Adapter<ListRiwayatPemesananAdap
         }
 //        holder.tanggalPerjalanan.text = model.keberangkatan?.tanggal_perjalanan?.let { format.format(it) }
         holder.kodeTransaksi.text = model.kode_pemesanan
-        holder.tanggalPerjalanan.text = "Keberangkatan: ${Helper.dateToTanggalLengkap(model.keberangkatan?.tanggal_perjalanan)}"
+        holder.tanggalPerjalanan.text = "Keberangkatan: ${Helper.dateToTanggalLengkap(model.tanggal_keberangkatan)}"
         holder.totalBayar.text = model.total_bayar?.let { Helper.formatRupiah(it) }
-        holder.gambar.load(model.paket_wisata?.foto) {
+        holder.gambar.load(model.paket_wisata_foto) {
             placeholder(R.drawable.loading_image_placeholder)
             crossfade(true)
         }

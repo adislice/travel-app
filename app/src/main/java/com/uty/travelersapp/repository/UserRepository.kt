@@ -56,7 +56,7 @@ class UserRepository {
             "no_telp" to noTelp,
         )
         if (ppUrl.isNotEmpty()) {
-            updateData.put("profile_picture", ppUrl)
+            updateData.put("foto", ppUrl)
         }
         val result = userRef.update(updateData as Map<String, Any>).await()
 

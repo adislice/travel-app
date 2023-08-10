@@ -9,7 +9,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.bumptech.glide.Glide
 import com.uty.travelersapp.DetailTempatWisataActivity
 import com.uty.travelersapp.R
 import com.uty.travelersapp.models.TempatWisataArrayItem

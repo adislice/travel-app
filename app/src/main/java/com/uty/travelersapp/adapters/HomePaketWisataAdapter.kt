@@ -9,7 +9,6 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import coil.load
-import com.bumptech.glide.Glide
 import com.uty.travelersapp.PaketWisataBaseActivity
 import com.uty.travelersapp.R
 import com.uty.travelersapp.models.PaketWisataItem

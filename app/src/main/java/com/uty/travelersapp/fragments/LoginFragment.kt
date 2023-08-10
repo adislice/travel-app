@@ -1,5 +1,7 @@
 package com.uty.travelersapp.fragments
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
@@ -9,7 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.CircularProgressIndicatorSpec
 import com.google.android.material.progressindicator.IndeterminateDrawable
 import com.google.android.material.snackbar.Snackbar
@@ -21,11 +25,16 @@ import com.uty.travelersapp.R
 import com.uty.travelersapp.databinding.FragmentLoginBinding
 import com.uty.travelersapp.extensions.Helpers.Companion.saveUserPref
 import com.uty.travelersapp.extensions.Helpers.Companion.snackbarDismiss
+import com.uty.travelersapp.fragments.paket_wisata.CheckoutFragment
 import com.uty.travelersapp.models.UserModel
 import com.uty.travelersapp.utils.FirebaseUtils.firebaseAuth
 import com.uty.travelersapp.utils.FirebaseUtils.firebaseDatabase
+import com.uty.travelersapp.utils.Helper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
 
 class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
@@ -64,6 +73,10 @@ class LoginFragment : Fragment() {
 
         binding.btnLoginGaskan.setOnClickListener {
             login()
+        }
+
+        binding.btnResetPassword.setOnClickListener {
+            showResetDialog()
         }
     }
 
@@ -199,4 +212,50 @@ class LoginFragment : Fragment() {
             )
         )
     }
+
+    private fun showResetDialog() {
+        val builder = AlertDialog.Builder(requireActivity())
+        builder.setTitle("Reset Password")
+
+        val alertLayout = layoutInflater.inflate(R.layout.dialog_input_email_reset, null)
+        builder.setView(alertLayout)
+//        alertLayout.findViewById<TextInputLayout>(R.id.input_email_reset).editText?.setText(promoTerpasang.kode)
+        builder.setPositiveButton("OK") { dialog: DialogInterface, _: Int ->
+            val enteredEmail = alertLayout.findViewById<TextInputLayout>(R.id.input_email_reset).editText?.text.toString()
+            sendPasswordReset(enteredEmail, dialog)
+
+        }
+
+        builder.setNegativeButton("Batal") { dialog: DialogInterface, _: Int ->
+            dialog.dismiss()
+        }
+
+        builder.create().show()
+
+
+    }
+
+    private fun sendPasswordReset(emailR: String, dialog: DialogInterface) {
+        firebaseAuth.sendPasswordResetEmail(emailR).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Email Reset Password Terkirim")
+                    .setMessage("Kami telah mengirimkan email berisi tautan untuk reset password ke email Anda (${emailR}). Silahkan klik tautan tersebut untuk mereset password akun Anda.")
+                    .setPositiveButton("Baik") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            } else {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Email Reset Password Gagal Dikirim")
+                    .setMessage("Silahkan cek kembali email Anda (${emailR}) apakah sudah benar dan sudah pernah mendaftar di aplikasi Kencana Wisata.")
+                    .setPositiveButton("Baik") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+            dialog.dismiss()
+        }
+    }
+
 }

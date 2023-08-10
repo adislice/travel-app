@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navitem_home"
-        android:name="com.uty.travelersapp.fragments.HomeFragment"
+        android:name="com.uty.travelersapp.fragments.dashboard.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -27,22 +27,22 @@
     </fragment>
     <fragment
         android:id="@+id/navitem_tempat_wisata"
-        android:name="com.uty.travelersapp.fragments.TempatWisataFragment"
+        android:name="com.uty.travelersapp.fragments.dashboard.TempatWisataFragment"
         android:label="Tempat Wisata"
         tools:layout="@layout/fragment_tempat_wisata" />
     <fragment
         android:id="@+id/navitem_paket_wisata"
-        android:name="com.uty.travelersapp.fragments.PaketWisataFragment"
+        android:name="com.uty.travelersapp.fragments.dashboard.PaketWisataFragment"
         android:label="Paket Wisata"
         tools:layout="@layout/fragment_paket_wisata" />
     <fragment
         android:id="@+id/navitem_riwayat_pemesanan"
-        android:name="com.uty.travelersapp.fragments.RiwayatPemesananFragment"
+        android:name="com.uty.travelersapp.fragments.dashboard.RiwayatPemesananFragment"
         android:label="fragment_riwayat_pemesanan"
         tools:layout="@layout/fragment_riwayat_pemesanan" />
     <fragment
         android:id="@+id/navitem_profil"
-        android:name="com.uty.travelersapp.fragments.ProfilFragment"
+        android:name="com.uty.travelersapp.fragments.dashboard.ProfilFragment"
         android:label="fragment_profil"
         tools:layout="@layout/fragment_profil" >
         <action
@@ -52,11 +52,47 @@
             app:exitAnim="@anim/shared_axis_exit"
             app:popEnterAnim="@anim/shared_axis_pop_enter"
             app:popExitAnim="@anim/shared_axis_pop_exit"/>
+        <action
+            android:id="@+id/action_navitem_profil_to_ubahPasswordFragment"
+            app:destination="@id/ubahPasswordFragment"
+            app:enterAnim="@anim/shared_axis_enter"
+            app:exitAnim="@anim/shared_axis_exit"
+            app:popEnterAnim="@anim/shared_axis_pop_enter"
+            app:popExitAnim="@anim/shared_axis_pop_exit"/>
+        <action
+            android:id="@+id/action_navitem_profil_to_infoPromoFragment"
+            app:destination="@id/infoPromoFragment"
+            app:enterAnim="@anim/shared_axis_enter"
+            app:exitAnim="@anim/shared_axis_exit"
+            app:popEnterAnim="@anim/shared_axis_pop_enter"
+            app:popExitAnim="@anim/shared_axis_pop_exit"/>
+        <action
+            android:id="@+id/action_navitem_profil_to_aboutFragment"
+            app:destination="@id/aboutFragment"
+            app:enterAnim="@anim/shared_axis_enter"
+            app:exitAnim="@anim/shared_axis_exit"
+            app:popEnterAnim="@anim/shared_axis_pop_enter"
+            app:popExitAnim="@anim/shared_axis_pop_exit"/>
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
-        android:name="com.uty.travelersapp.fragments.EditProfileFragment"
+        android:name="com.uty.travelersapp.fragments.profil.EditProfileFragment"
         android:label="fragment_edit_profile"
         tools:layout="@layout/fragment_edit_profile" />
+    <fragment
+        android:id="@+id/ubahPasswordFragment"
+        android:name="com.uty.travelersapp.fragments.profil.UbahPasswordFragment"
+        android:label="fragment_ubah_password"
+        tools:layout="@layout/fragment_ubah_password" />
+    <fragment
+        android:id="@+id/infoPromoFragment"
+        android:name="com.uty.travelersapp.fragments.profil.InfoPromoFragment"
+        android:label="fragment_info_promo"
+        tools:layout="@layout/fragment_info_promo" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.uty.travelersapp.fragments.profil.AboutFragment"
+        android:label="fragment_about"
+        tools:layout="@layout/fragment_about" />
 
 </navigation>

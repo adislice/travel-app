@@ -24,7 +24,7 @@ import com.uty.travelersapp.utils.MyUser
 import com.uty.travelersapp.viewmodel.PemesananViewModel
 
 class ProsesTransaksiActivity : AppCompatActivity() {
-    private var idPemesanan = ""
+    private var paymentUrl = ""
     private val pemesananViewModel by viewModels<PemesananViewModel>()
     private var isProcessed = false
 
@@ -34,104 +34,37 @@ class ProsesTransaksiActivity : AppCompatActivity() {
 
         val loadingSpinner = Helper.buildLoadingSpinner(this, "Loading", "Memuat pemesanan...")
         
-        val i = intent.getStringExtra(IntentKey.TRANSAKSI_ID)
+        val i = intent.getStringExtra(IntentKey.PAYMENT_URL)
         if (i != null) {
-            idPemesanan = i
+            paymentUrl = i
         }
 
-        if (idPemesanan.isEmpty()) {
+        if (paymentUrl.isEmpty()) {
             makeToast("Pemesanan tidak ditemukan")
             finish()
-        }
-
-        pemesananViewModel.getDetailPemesanan(idPemesanan).observe(this) { response ->
-
-            when(response) {
-                is Response.Loading -> {
-                    loadingSpinner.show()
-                }
-                is Response.Success -> {
-                    loadingSpinner.dismiss()
-                    val namaProdukPaket = "${response.data?.paket_wisata?.nama} (${response.data?.jenis_kendaraan?.nama})"
-
-                    if (response.data?.payment_url != null && response.data.status == Status.PENDING && !isProcessed) {
-                        isProcessed = true
-                        val transactionUrl = response.data.payment_url
-                        val webView: WebView = findViewById(R.id.webview_pembayaran)
-                        webView.webViewClient = object: WebViewClient() {
-                            override fun doUpdateVisitedHistory(
-                                view: WebView?,
-                                url: String?,
-                                isReload: Boolean
-                            ) {
-                                Log.d("kencana", "url: " + url.toString())
-                                if (url != null) {
-                                    if (url.contains("#/406")) {
-                                        isProcessed = true
-                                        finish()
-                                    }
-                                }
-                                super.doUpdateVisitedHistory(view, url, isReload)
-                            }
+        } else {
+            val transactionUrl = paymentUrl
+            val webView: WebView = findViewById(R.id.webview_pembayaran)
+            webView.webViewClient = object: WebViewClient() {
+                override fun doUpdateVisitedHistory(
+                    view: WebView?,
+                    url: String?,
+                    isReload: Boolean
+                ) {
+                    Log.d("kencana", "url: " + url.toString())
+                    if (url != null) {
+                        if (url.contains("#/406")) {
+                            isProcessed = true
+                            finish()
                         }
-                        webView.settings.javaScriptEnabled = true
-                        webView.loadUrl(transactionUrl)
-                        isProcessed = true
                     }
-                    if(response.data.status == Status.DIPROSES){
-                        buildUiKit()
-                        val midtrans = MidtransSDK.getInstance()
-                        val transactionRequest = TransactionRequest(response.data?.kode_pemesanan!!, response.data.total_bayar!!, "IDR")
-                        val customerDetail = CustomerDetails()
-                        customerDetail.customerIdentifier = response.data.user?.id
-                        customerDetail.firstName = response.data.user?.nama
-                        customerDetail.email = MyUser.user?.email
-                        customerDetail.phone = response.data.user?.no_telp
-
-                        val billingAddress = BillingAddress()
-                        billingAddress.address = "";
-                        billingAddress.city = "";
-                        billingAddress.postalCode = "";
-                        customerDetail.billingAddress = billingAddress
-
-                        val shippingAddress = ShippingAddress()
-                        shippingAddress.address = ""
-                        shippingAddress.city = ""
-                        shippingAddress.postalCode = ""
-                        customerDetail.shippingAddress = shippingAddress
-
-                        transactionRequest.customerDetails = customerDetail
-
-                        // item details
-                        val itemDetails = arrayListOf<ItemDetails>()
-                        itemDetails.add(ItemDetails(response.data.produk?.id, response.data.produk?.harga!!, 1, namaProdukPaket))
-                        if (!response.data.promo?.kode.isNullOrEmpty()) {
-                            val namaPromo =  "Promo Diskon " + response.data.promo?.persen + "%"
-                            itemDetails.add(ItemDetails(response.data.promo?.kode, -response.data.promo?.potongan!!, 1, namaPromo))
-                        }
-                        transactionRequest.itemDetails = itemDetails
-
-                        // set sdk
-                        midtrans.transactionRequest = transactionRequest
-
-                        // launch transaction
-                        midtrans.startPaymentUiFlow(this)
-                    }
-                    if(response.data.status == Status.SELESAI) {
-                        finish()
-                    }
-
-
+                    super.doUpdateVisitedHistory(view, url, isReload)
                 }
-                is Response.Failure -> {
-                    makeToast("Error mengambil pemesanan: " + response.errorMessage)
-                }
-
-                else -> {}
             }
+            webView.settings.javaScriptEnabled = true
+            webView.loadUrl(transactionUrl)
+            isProcessed = true
         }
-
-
 
 
     }
@@ -141,12 +74,14 @@ class ProsesTransaksiActivity : AppCompatActivity() {
             .setClientKey("SB-Mid-client-9ISWkdD18OTVrVhh")
             .setContext(this@ProsesTransaksiActivity)
             .setTransactionFinishedCallback { result ->
-                makeToast("Transaction Result: " + result.status)
+//                makeToast("Transaction Result: " + result.status)
+                isProcessed = true
                 finish()
             }
             .setMerchantBaseUrl("https://kencana-admin.vercel.app/api/")
             .setColorTheme(CustomColorTheme("#" + Integer.toHexString(ContextCompat.getColor(this@ProsesTransaksiActivity, R.color.md_theme_light_primary)), "#B61548", "#FFE51255"))
             .setLanguage("id")
+//            .enableLog(true)
             .buildSDK()
 
     }

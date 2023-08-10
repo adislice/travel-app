@@ -30,14 +30,9 @@ object Helper {
         if (addresses != null) {
             if (addresses.isNotEmpty()) {
                 address = addresses[0]
-                fulladdress = address.getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex
-                var city = address.getLocality();
-                var state = address.getAdminArea();
-                var country = address.getCountryName();
-                var postalCode = address.getPostalCode();
-                var knownName = address.getFeatureName(); // Only if available else return NULL
+                fulladdress = address.getAddressLine(0)
             } else{
-                fulladdress = "Location not found"
+                fulladdress = "Lokasi tidak ditemukan"
             }
         } else {
             fulladdress = "Lokasi tidak ditemukan"
@@ -46,7 +41,7 @@ object Helper {
 
     }
 
-    fun getLocationAddress(ctx: Context, lat: Double, lng: Double): Address? {
+    fun getLocalityName(ctx: Context, lat: Double, lng: Double): Address? {
         val geocoder = Geocoder(ctx, Locale.getDefault())
         val addresses: List<Address>?
         val address: Address?
@@ -56,7 +51,7 @@ object Helper {
             if (addresses != null) {
                 if (addresses.isNotEmpty()) {
                     address = addresses[0]
-                    fulladdress = address.getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex
+                    fulladdress = address.getAddressLine(0)
                     return address
                 } else{
                     return null
@@ -130,6 +125,17 @@ object Helper {
             return "-"
         }
     }
+    fun dateToTanggalSingkat(inputDate: Date?): String {
+        if (inputDate == null) {
+            return "-"
+        }
+        try {
+            val outputFormat = SimpleDateFormat("d/M/yyyy", Locale.getDefault())
+            return outputFormat.format(inputDate)
+        } catch (e: Exception) {
+            return "-"
+        }
+    }
 
     fun formatTanggalDanWaktu(date: Date): String {
         try {
@@ -176,6 +182,17 @@ object Helper {
         }
 
         return "INV-KNC${Calendar.getInstance().get(Calendar.YEAR)}-$randomCode"
+    }
+
+    fun convertUnixTimestampToFormattedDate(unixTimestamp: Long): String {
+        try {
+            val date = Date(unixTimestamp * 1000L) // Convert to milliseconds by multiplying with 1000
+            val sdf = SimpleDateFormat("EEEE, d MMMM yyyy, HH:mm", Locale("id", "ID")) // Indonesian locale for day and month names
+            return sdf.format(date)
+        } catch (e: Exception) {
+            return "-"
+        }
+
     }
 
 }

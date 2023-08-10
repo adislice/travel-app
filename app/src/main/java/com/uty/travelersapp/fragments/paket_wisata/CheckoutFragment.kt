@@ -16,26 +16,33 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import coil.load
 import com.google.android.material.textfield.TextInputLayout
 import com.uty.travelersapp.R
 import com.uty.travelersapp.databinding.FragmentCheckoutBinding
+import com.uty.travelersapp.extensions.Helpers.Companion.fixBottomInsets
 import com.uty.travelersapp.models.Response
 import com.uty.travelersapp.models.Status
 import com.uty.travelersapp.models.TempatWisataArrayItem
 import com.uty.travelersapp.models.Pemesanan
+import com.uty.travelersapp.models.PemesananInsert
 import com.uty.travelersapp.models.PemesananJenisKendaraan
 import com.uty.travelersapp.models.PemesananKeberangkatan
 import com.uty.travelersapp.models.PemesananPaketWisata
 import com.uty.travelersapp.models.PemesananProduk
 import com.uty.travelersapp.models.PemesananPromo
 import com.uty.travelersapp.models.PemesananUser
+import com.uty.travelersapp.models.Promo
+import com.uty.travelersapp.utils.FirebaseUtils
 import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.IntentKey
 import com.uty.travelersapp.utils.MyUser
 import com.uty.travelersapp.viewmodel.AlurPemesananViewModel
 import com.uty.travelersapp.viewmodel.PemesananViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -52,11 +59,14 @@ class CheckoutFragment : Fragment() {
     private var hargaProduk = MutableLiveData<Double>(0.0)
     private var diskon = MutableLiveData<Double>(0.0)
     private var totalBayar = MutableLiveData<Double>(0.0)
-    private var daftarDiskon = arrayListOf<Promo>()
-    private var promoTerpasang = Promo("", 0)
+    private var daftarDiskon = arrayListOf<PromoTemp>()
+    private var promoTerpasang = PromoTemp("", 0)
+    private var promoAktif=  MutableLiveData<Promo?>(null)
+    private var potongan = 0.0
+    private var idPromo = ""
     private val pemesananViewModel by activityViewModels<PemesananViewModel>()
 
-    data class Promo(val kode: String, val persen: Int)
+    data class PromoTemp(val kode: String, val persen: Int)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,27 +84,15 @@ class CheckoutFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.kontenPesan) { view, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-
-            val pb = insets.bottom
-            view.setPadding(
-                view.paddingLeft,
-                view.paddingTop,
-                view.paddingRight,
-                pb
-            )
-
-            WindowInsetsCompat.CONSUMED
-        }
+        binding.kontenPesan.fixBottomInsets()
 
         binding.toolbar.navigationIcon = ContextCompat.getDrawable(requireActivity(), R.drawable.outline_arrow_back_24)
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
 
-        daftarDiskon.add(Promo("NEWYEAR", 20))
-        daftarDiskon.add(Promo("JOGJASKUY", 30))
+        daftarDiskon.add(PromoTemp("NEWYEAR", 20))
+        daftarDiskon.add(PromoTemp("JOGJASKUY", 30))
 
         val llTujuanWisata = binding.llTlTujuanWisata
         diskon.value = 0.0
@@ -102,6 +100,11 @@ class CheckoutFragment : Fragment() {
         // get data paket wisata dari viewmodel
         alurPemesananViewModel.paketWisataTerpilih.observe(viewLifecycleOwner) { pw ->
             binding.txtNamaPaket.text = pw.nama
+            binding.txtJamKeberangkatan.text = pw.jam_keberangkatan
+            binding.imgThumbPaket.load(pw.foto?.firstOrNull()) {
+                crossfade(true)
+                placeholder(R.drawable.image_placeholder)
+            }
         }
         binding.txtNamaProduk.visibility = View.GONE
         // get data produk paket wisata dari viewmodel
@@ -118,9 +121,6 @@ class CheckoutFragment : Fragment() {
 
         alurPemesananViewModel.tujuanWisata.observe(viewLifecycleOwner) { tujuan ->
             tujuanWisataList.clear()
-//            tujuan.forEach { item ->
-//                tujuanWisataList.add(item)
-//            }
             tujuan.forEachIndexed { index, destinasi ->
                 val infl = layoutInflater.inflate(R.layout.item_timeline_tempat_wisata, null, false)
                 infl.findViewById<TextView>(R.id.tl_text).text = destinasi.tempat_wisata_data?.nama
@@ -163,9 +163,16 @@ class CheckoutFragment : Fragment() {
             showPromoCodeDialog()
         }
 
-        diskon.observe(viewLifecycleOwner) {
-            binding.txtTransaksiDiskonNama.text = "Potongan Promo ${promoTerpasang.persen}%"
-            binding.txtTransaksiDiskonPotongan.text = "- " + Helper.formatRupiah(it)
+        promoAktif.observe(viewLifecycleOwner) {
+            if (it != null) {
+                binding.txtTransaksiDiskonNama.text = "Potongan ${it.nama}"
+                binding.txtTransaksiDiskonPotongan.text = "- " + Helper.formatRupiah(potongan)
+            }
+            else {
+                binding.txtTransaksiDiskonNama.text = " "
+                binding.txtTransaksiDiskonPotongan.text = " "
+            }
+
         }
 
         binding.btnProsesTransaksi.setOnClickListener {
@@ -186,22 +193,30 @@ class CheckoutFragment : Fragment() {
                 Locale.getDefault())
             val matchedPromo = daftarDiskon.find { it.kode.uppercase(Locale.getDefault()) == promoCode }
 
-            if (matchedPromo != null) {
-                // Kode promo valid
-                promoTerpasang = matchedPromo
-                showDialog(
-                    "Kode Promo Valid",
-                    "Kode promo berhasil digunakan. Anda mendapat diskon ${matchedPromo.persen}%"
-                )
-                val d = matchedPromo.persen / 100.0
-                diskon.value = d * hargaProduk.value!!
-                binding.txtKodePromo.text = "Kode promo digunakan: ${matchedPromo.kode}"
-                hitungTotalBayar()
-            } else {
-                // Kode promo tidak valid
-                showDialog("Kode Promo Tidak Valid", "Kode promo yang dimasukkan tidak valid.")
+
+            lifecycleScope.launch(Dispatchers.Main) {
+                val cek = cekPromo(promoCode)
+                if (cek != null) {
+                    var msg = "Selamat! Anda mendapatkan diskon ${cek.persen}% "
+                    if (cek.max_potongan!! > 0.0) {
+                        msg += "(max: ${Helper.formatRupiah(cek.max_potongan)})"
+
+                    }
+                    val pot = hargaProduk.value!! * cek.persen!! / 100.0
+                    if (pot > cek.max_potongan) {
+                        potongan = cek.max_potongan
+                    } else {
+                        potongan = pot
+                    }
+                    cek.id?.let {idP -> idPromo = idP}
+                    promoAktif.value = cek
+                    showDialog("Kode Promo Valid", msg)
+                    hitungTotalBayar()
+                    binding.txtKodePromo.text = "Promo digunakan \'${promoAktif.value?.kode}\'"
+                }
+                dialog.dismiss()
             }
-            dialog.dismiss()
+
         }
 
         builder.setNegativeButton("Batal") { dialog: DialogInterface, _: Int ->
@@ -209,8 +224,10 @@ class CheckoutFragment : Fragment() {
         }
         builder.setNeutralButton("Hapus Promo") { dialog, _ ->
             diskon.value = 0.0
+            potongan = 0.0
             hitungTotalBayar()
-            promoTerpasang = Promo("", 0)
+            promoAktif.value = null
+            promoTerpasang = PromoTemp("", 0)
             binding.txtKodePromo.text = "Masukkan kode promo"
         }
 
@@ -228,7 +245,7 @@ class CheckoutFragment : Fragment() {
     }
 
     fun hitungTotalBayar() {
-        val total = hargaProduk.value!! - diskon.value!!
+        val total = hargaProduk.value!! - potongan
         totalBayar.value = total
     }
 
@@ -262,17 +279,7 @@ class CheckoutFragment : Fragment() {
             persen = promoTerpasang.persen.toDouble(),
             potongan = diskon.value
         )
-        val jenisKendaraan = PemesananJenisKendaraan(
-            id = alurPemesananViewModel.produkTerpilih.value?.jenis_kendaraan?.id,
-            nama = alurPemesananViewModel.produkTerpilih.value?.jenis_kendaraan?.nama,
-            jumlah_seat = alurPemesananViewModel.produkTerpilih.value?.jenis_kendaraan?.jumlah_seat
-        )
-        val user = PemesananUser(
-            id = MyUser.user?.id,
-            nama = alurPemesananViewModel.namaPemesan.value,
-            no_telp = alurPemesananViewModel.noTelpPemesan.value,
-            email = MyUser.user?.email
-        )
+
         val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val dateKeberangkatan = inputFormat.parse(alurPemesananViewModel.tanggalPerjalanan.value!!)
         val lokLat = if(alurPemesananViewModel.lokasiPenjemputan.value?.latitude != null) alurPemesananViewModel.lokasiPenjemputan.value?.latitude.toString() else "0"
@@ -283,16 +290,22 @@ class CheckoutFragment : Fragment() {
             lokLong
         )
 
-        val dataTransaksi = Pemesanan(
+        val dataTransaksi = PemesananInsert(
             kode_pemesanan = Helper.generateTransactionCode(),
             total_bayar = totalBayar.value,
             status = Status.DIPROSES,
-            paket_wisata = pw,
-            produk = produk,
-            promo = promo,
-            user = user,
-            keberangkatan = keberangkatan,
-            jenis_kendaraan = jenisKendaraan
+            paket_wisata_id = alurPemesananViewModel.paketWisataTerpilih.value?.id,
+            produk_harga = alurPemesananViewModel.produkTerpilih.value?.harga,
+            produk_id = alurPemesananViewModel.produkTerpilih.value?.id,
+            promo_id = promoAktif.value?.id,
+            promo_potongan = potongan,
+            user_id = MyUser.user?.id,
+            user_nama = alurPemesananViewModel.namaPemesan.value,
+            user_no_telp = alurPemesananViewModel.noTelpPemesan.value,
+            tanggal_keberangkatan = dateKeberangkatan,
+            jam_keberangkatan = alurPemesananViewModel.paketWisataTerpilih.value?.jam_keberangkatan,
+            lokasi_jemput_lat = lokLat,
+            lokasi_jemput_lng = lokLong,
         )
         pemesananViewModel.insertPemesanan(MyUser.user?.nama!!, dataTransaksi).observe(viewLifecycleOwner) { response ->
             when(response) {
@@ -315,6 +328,45 @@ class CheckoutFragment : Fragment() {
                 }
             }
         }
+    }
+
+
+    suspend fun cekPromo(kodePromo: String): Promo? {
+        val result = FirebaseUtils.firebaseDatabase.collection("promo").whereEqualTo("kode", kodePromo.uppercase()).get().await()
+        if (result.isEmpty) {
+            showDialog("Kode Promo Tidak Valid", "Kode promo yang dimasukkan tidak valid.")
+        }
+
+        for (promoSnap in result.documents) {
+            var promo = promoSnap.toObject(Promo::class.java)
+            promo?.id = promoSnap.id
+            val isValid = isTodayInRange(promo?.tanggal_mulai!!, promo.tanggal_akhir!!)
+            if (isValid) {
+//                var msg = "Selamat! Anda mendapatkan diskon ${promo.persen}% "
+//                if (promo.max_potongan!! > 0.0) {
+//                    msg += "(max: ${Helper.formatRupiah(promo.max_potongan)})"
+//                }
+//                showDialog("Kode Promo Valid", msg)
+                return promo
+            } else {
+                showDialog("Kode Promo Tidak Valid", "Masa berlaku promo sudah habis")
+            }
+        }
+
+        return null
+
+    }
+
+    fun isTodayInRange(minDate: Date, maxDate: Date): Boolean {
+        try {
+            val currentDate = Date()
+
+            return currentDate.after(minDate) && currentDate.before(maxDate)
+        } catch (e: Exception) {
+            Log.d("kencana", "kesalahan promo: " + e.message)
+            return false
+        }
+
     }
 
 }

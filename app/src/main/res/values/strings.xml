@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Travelers</string>
+    <string name="app_name">Kencana Wisata</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="large_text">
@@ -90,5 +90,7 @@
         "On the layout level, design your app layout to minimize opportunities for interference. "
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
+    </string>
+    <string name="about_kencana">Kencana Wisata merupakan biro perjalanan wisata yang melayani perjalanan wisata ke berbagai tempat wisata di Pulau Jawa. Kami menawarkan paket wisata ke berbagai tempat wisata populer dan menarik dengan harga terjangkau. Fasilitas yang menarik dan armada kendaraan yang nyaman membuat pengalaman berwisata bersama Kencana Wisata menjadi tak terlupakan.
     </string>
 </resources>

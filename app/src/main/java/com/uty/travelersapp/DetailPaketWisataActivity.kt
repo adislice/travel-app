@@ -8,7 +8,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.Marker
@@ -58,12 +58,10 @@ class DetailPaketWisataActivity : AppCompatActivity() {
             binding.txtDetailPaketNama.text = pw.nama
             binding.collapsingToolbarLayoutDetailpaket.title = pw.nama
             binding.txtDetailWisataDeskripsi.text = pw.deskripsi
-            Glide.with(this)
-                .load(pw.foto?.firstOrNull())
-                .centerCrop()
-                .placeholder(R.drawable.image_placeholder)
-                .error(R.drawable.image_placeholder)
-                .into(binding.imgDetailPaket)
+            binding.imgDetailPaket.load(pw.foto?.firstOrNull()) {
+                crossfade(true)
+                placeholder(R.drawable.image_placeholder)
+            }
 
             val idPaket = pw.id!!
             rvTujuanWisata = binding.rvTujuanWisata

@@ -1,4 +1,4 @@
-package com.uty.travelersapp.fragments
+package com.uty.travelersapp.fragments.dashboard
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import coil.load
-import com.bumptech.glide.Glide
 import com.uty.travelersapp.MainActivity
 import com.uty.travelersapp.R
 import com.uty.travelersapp.customs.MyAlertDialogBuilder
@@ -53,26 +52,29 @@ class ProfilFragment : Fragment() {
             }
         }
 
-//        requireContext().getUserPref()?.let {
-//            binding.txtProfilNama.text = it.nama
-//            binding.txtProfilEmail.text = it.email
-//
-//        }
+        binding.toolbarProfil.inflateMenu(R.menu.menu_profil)
+        binding.toolbarProfil.setOnMenuItemClickListener { menu ->
+            when(menu.itemId) {
+                R.id.menuitem_lihat_promo -> {
+                    findNavController().navigate(R.id.action_navitem_profil_to_infoPromoFragment)
+                }
 
-//        val toolbar = binding.toolbarProfil
-//        toolbar.inflateMenu(R.menu.menu_fragment_profile)
-//        toolbar.setOnMenuItemClickListener { menu ->
-//            if (menu.itemId == R.id.menuitem_edit_profile) {
-//                findNavController().navigate(R.id.action_navitem_profil_to_editProfileFragment)
-//            }
-//            return@setOnMenuItemClickListener true
-//        }
+                else -> {}
+            }
+            return@setOnMenuItemClickListener true
+        }
+
+        binding.btnUbahPassword.setOnClickListener {
+            findNavController().navigate(R.id.action_navitem_profil_to_ubahPasswordFragment)
+        }
+        binding.btnAbout.setOnClickListener {
+            findNavController().navigate(R.id.action_navitem_profil_to_aboutFragment)
+        }
+
         binding.btnUbahProfil.setOnClickListener {
             findNavController().navigate(R.id.action_navitem_profil_to_editProfileFragment)
         }
         val user = firebaseAuth.currentUser
-//        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
-
         Log.d("kencana", "awal: " + userViewModel.userId.value)
         user?.let { currUser ->
             userViewModel.setUser(user.uid)
@@ -88,12 +90,7 @@ class ProfilFragment : Fragment() {
                                 placeholder(R.drawable.ic_profile_pic_placeholder)
                                 crossfade(true)
                             }
-//                            Glide.with(requireActivity())
-//                                .load(pp)
-//                                .centerCrop()
-//                                .placeholder(R.drawable.loading_image_placeholder)
-//                                .error(R.drawable.image_placeholder)
-//                                .into(binding.imgProfil)
+
                             binding.imgProfil.setColorFilter(null)
                             binding.imgProfil.imageTintList = null
 

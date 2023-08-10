@@ -45,7 +45,7 @@ class PaketWisataRepository {
     }
 
     fun getAllPaketWisataRealtime(limit: Int = 0) = dbCol.apply{
-        orderBy("created_at", Query.Direction.DESCENDING)
+        orderBy("nama", Query.Direction.ASCENDING)
         if (limit != 0) {
             limit(limit.toLong())
         }

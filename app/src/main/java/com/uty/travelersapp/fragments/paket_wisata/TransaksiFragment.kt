@@ -16,6 +16,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -25,18 +27,27 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.google.android.gms.maps.model.LatLng
+import com.midtrans.sdk.corekit.core.MidtransSDK
+import com.midtrans.sdk.corekit.core.TransactionRequest
 import com.midtrans.sdk.corekit.core.themes.CustomColorTheme
+import com.midtrans.sdk.corekit.models.BillingAddress
+import com.midtrans.sdk.corekit.models.CustomerDetails
+import com.midtrans.sdk.corekit.models.ItemDetails
+import com.midtrans.sdk.corekit.models.ShippingAddress
 import com.midtrans.sdk.uikit.SdkUIFlowBuilder
 import com.uty.travelersapp.ProsesTransaksiActivity
 import com.uty.travelersapp.R
 import com.uty.travelersapp.databinding.FragmentTransaksiBinding
 import com.uty.travelersapp.extensions.Helpers.Companion.makeToast
+import com.uty.travelersapp.fragments.PrakiraanCuacaFragment
 import com.uty.travelersapp.models.DaftarLokasi
+import com.uty.travelersapp.models.Pemesanan
 import com.uty.travelersapp.models.Response
 import com.uty.travelersapp.models.Status
 import com.uty.travelersapp.utils.ColorStatus
 import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.IntentKey
+import com.uty.travelersapp.utils.MyUser
 import com.uty.travelersapp.viewmodel.AlurPemesananViewModel
 import com.uty.travelersapp.viewmodel.PaketWisataViewModel
 import com.uty.travelersapp.viewmodel.PemesananViewModel
@@ -52,11 +63,14 @@ class TransaksiFragment : Fragment() {
     private val pemesananViewModel by activityViewModels<PemesananViewModel>()
     private val paketWisataViewModel by activityViewModels<PaketWisataViewModel>()
     private val alurPemesananViewModel by activityViewModels<AlurPemesananViewModel>()
+    private var isProcessed = false
     private var idTransaksi: String? = null
     private var idPaketWisata: String = ""
     private var lokasiList = arrayListOf<DaftarLokasi>()
     private lateinit var lokasiJemput: DaftarLokasi
     private var fileName = "kencana"
+    private lateinit var dataPemesanan: Pemesanan
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,15 +111,13 @@ class TransaksiFragment : Fragment() {
                         loadingSpinner.show()
                     }
                     is Response.Success -> {
+                        dataPemesanan = response.data
                         lokasiList.clear()
                         loadingSpinner.dismiss()
-                        response.data.paket_wisata?.let {
-                            it.id?.let {
-                                idPaketWisata = it
-                            }
-                        }
+                        
+                        idPaketWisata = response.data.paket_wisata_id!!
 
-                        val namaProdukPaket = "${response.data?.paket_wisata?.nama} (${response.data?.jenis_kendaraan?.nama})"
+                        val namaProdukPaket = "${response.data?.paket_wisata_nama} (${response.data?.jenis_kendaraan_nama})"
                         binding.txtTotalBayar.text = Helper.formatRupiah(response.data?.total_bayar!!)
                         binding.txtKodeTransaksi.text = response.data.kode_pemesanan
                         fileName = response.data.kode_pemesanan!!
@@ -128,7 +140,7 @@ class TransaksiFragment : Fragment() {
                                 binding.imgStatusIcon.setImageDrawable(successIcon)
                                 binding.imgStatusIcon.setColorFilter(Color.parseColor("#388E3C"))
                                 binding.imgStatusIcon.backgroundTintList = ColorStateList.valueOf(ColorStatus.SELESAI_BG)
-                                response.data.pembayaran?.tanggal_bayar?.let {
+                                response.data.tanggal_bayar?.let {
                                     binding.labelBatasAtauTglBayar.text = "Tanggal Bayar"
                                     binding.txtBatasAtauTglBayar.text = Helper.formatTanggalDanWaktu(it)
                                 }
@@ -137,7 +149,7 @@ class TransaksiFragment : Fragment() {
                                 binding.txtStatus.text = "PENDING"
                                 binding.txtStatus.setTextColor(ColorStatus.PENDING_TEXT)
                                 binding.txtStatus.backgroundTintList = ColorStateList.valueOf(ColorStatus.PENDING_BG)
-                                response.data.pembayaran?.batas_bayar?.let {
+                                response.data.batas_bayar?.let {
                                     binding.labelBatasAtauTglBayar.text = "Bayar Sebelum"
                                     binding.txtBatasAtauTglBayar.text = Helper.formatTanggalDanWaktu(it)
                                 }
@@ -148,6 +160,7 @@ class TransaksiFragment : Fragment() {
                                 binding.txtStatus.backgroundTintList = ColorStateList.valueOf(ColorStatus.DIBATALKAN_BG)
                                 binding.labelBatasAtauTglBayar.text = "Tanggal Bayar"
                                 binding.txtBatasAtauTglBayar.text = ""
+                                binding.btnBayarSekarang.visibility = View.GONE
                             }
                             else -> {
                                 binding.txtStatus.text = "TIDAK DIKETAHUI"
@@ -155,26 +168,30 @@ class TransaksiFragment : Fragment() {
                             }
                         }
                         binding.txtTransaksiNamaPaket.text = namaProdukPaket
-                        binding.txtTransaksiHargaPaket.text = Helper.formatRupiah(response.data.produk?.harga!!)
-                        if (!response.data.promo?.kode.isNullOrEmpty()) {
-                            binding.txtTransaksiDiskonNama.text = "Promo Diskon " + response.data.promo?.persen + "%"
-                            binding.txtTransaksiDiskonPotongan.text = "- " + Helper.formatRupiah(response.data.promo?.potongan!!)
+                        binding.txtTransaksiHargaPaket.text = Helper.formatRupiah(response.data.produk_harga!!)
+                        if (response.data.promo_potongan > 0.0) {
+                            binding.txtTransaksiDiskonNama.text = "Diskon Promo "
+                            binding.txtTransaksiDiskonPotongan.text = "- " + Helper.formatRupiah(response.data.promo_potongan!!)
+                            binding.txtTransaksiDiskonNama.visibility = View.VISIBLE
+                            binding.txtTransaksiDiskonPotongan.visibility = View.VISIBLE
                         } else {
                             binding.txtTransaksiDiskonNama.visibility = View.GONE
                             binding.txtTransaksiDiskonPotongan.visibility = View.GONE
                         }
                         binding.txtTotalSemua.text = Helper.formatRupiah(response.data?.total_bayar!!)
-                        binding.txtNamaPaket.text = response.data.paket_wisata?.nama
-                        binding.txtNamaProduk.text = "${response.data.jenis_kendaraan?.nama} (${response.data.jenis_kendaraan?.jumlah_seat} seat)"
-                        binding.txtHargaProduk.text = Helper.formatRupiah(response.data.produk.harga)
-                        binding.txtTglKeberangkatan.text = Helper.formatTanggalLengkapFromDate(response.data.keberangkatan?.tanggal_perjalanan)
-                        binding.txtNotelpPemesan.text = response.data.user?.no_telp
+                        binding.txtNamaPaket.text = response.data.paket_wisata_nama
+                        binding.txtNamaProduk.text = "${response.data.jenis_kendaraan_nama} (${response.data.jenis_kendaraan_jumlah_seat} seat)"
+                        binding.txtHargaProduk.text = Helper.formatRupiah(response.data.produk_harga!!)
+                        binding.txtTglKeberangkatan.text = Helper.formatTanggalLengkapFromDate(response.data.tanggal_keberangkatan)
+                        binding.txtJamKeberangkatan.text = response.data.jam_keberangkatan
+                        binding.txtNotelpPemesan.text = response.data.user_no_telp
+                        binding.txtNamaPemesan.text = response.data.user_nama
                         var lokPenjemputanLat = 0.0
-                        response.data.keberangkatan?.lokasi_jemput_lat?.let {
+                        response.data.lokasi_jemput_lat?.let {
                             lokPenjemputanLat = it.toDouble()
                         }
                         var lokPenjemputanLong = 0.0
-                        response.data.keberangkatan?.lokasi_jemput_lng?.let {
+                        response.data.lokasi_jemput_lng?.let {
                             lokPenjemputanLong = it.toDouble()
                         }
                         val firstLatLng = LatLng(lokPenjemputanLat, lokPenjemputanLong)
@@ -184,25 +201,21 @@ class TransaksiFragment : Fragment() {
                             binding.txtAlamatJemput.text = address
                         }
 
-                        // payment api
-
                         binding.btnBayarSekarang.setOnClickListener {
-                            val intent = Intent(requireActivity(), ProsesTransaksiActivity::class.java)
-                            intent.putExtra(IntentKey.TRANSAKSI_ID, idTransaksi)
-                            startActivity(intent)
+                            bayarSekarang()
                         }
 
                         // list tujuan wisata
                         val llTujuanWisata = binding.llTujuanWisata
                         paketWisataViewModel.setPaketWisataId(idPaketWisata)
-                        paketWisataViewModel.getDetailPaketWisata.observe(viewLifecycleOwner) { response ->
-                            when(response) {
+                        paketWisataViewModel.getDetailPaketWisata.observe(viewLifecycleOwner) { response2 ->
+                            when(response2) {
                                 is Response.Loading -> {
 
                                 }
                                 is Response.Success -> {
 
-                                    var pw = response.data
+                                    var pw = response2.data
                                     paketWisataViewModel.getTujuanWisata(pw.tempat_wisata!!)
                                     paketWisataViewModel.tujuanWisata.observe(viewLifecycleOwner) { li ->
                                         lokasiList.clear()
@@ -221,7 +234,6 @@ class TransaksiFragment : Fragment() {
                                             lokasiList.add(DaftarLokasi(destinasi.tempat_wisata_data?.nama ?: "", newLatLng))
                                             val infl = layoutInflater.inflate(R.layout.item_timeline_tempatwisata_besar, null, false)
                                             infl.findViewById<TextView>(R.id.txt_tl_nama_tempat_wisata).text = destinasi.tempat_wisata_data?.nama
-//                                            infl.findViewById<TextView>(R.id.txt_tl_order).text = "TUJUAN " + (index + 1).toString()
                                             infl.findViewById<TextView>(R.id.txt_tl_alamat).text = "TUJUAN " + (index + 1).toString() + " • " + "${destinasi.tempat_wisata_data?.kota}, ${destinasi.tempat_wisata_data?.provinsi}"
                                             infl.findViewById<ImageView>(R.id.img_tl_tujuan_gambar).load(destinasi.tempat_wisata_data?.foto?.firstOrNull()) {
                                                 placeholder(R.drawable.loading_image_placeholder)
@@ -233,6 +245,27 @@ class TransaksiFragment : Fragment() {
                                             if (index == sortedList.size - 1) {
                                                 infl.findViewById<View>(R.id.tl_garis_bawah).visibility = View.INVISIBLE
                                             }
+                                            if (response.data.status == Status.SELESAI) {
+                                                infl.setOnClickListener {
+                                                    val bundle = Bundle()
+                                                    bundle.putString("LAT", newLatLng.latitude.toString())
+                                                    bundle.putString("LNG", newLatLng.longitude.toString())
+                                                    bundle.putString("NAMA", destinasi.tempat_wisata_data?.nama)
+                                                    bundle.putSerializable("TANGGAL_PERJALANAN", response.data.tanggal_keberangkatan)
+                                                    val fragmentManager = parentFragmentManager
+                                                    val newFragment = PrakiraanCuacaFragment()
+                                                    newFragment.arguments = bundle
+                                                    val fragmentTransaction = fragmentManager.beginTransaction()
+                                                    fragmentTransaction.apply {
+                                                        setCustomAnimations(R.anim.shared_axis_enter, R.anim.shared_axis_exit, R.anim.shared_axis_pop_enter, R.anim.shared_axis_pop_exit)
+                                                        hide(this@TransaksiFragment)
+                                                        add(((view as ViewGroup).parent as View).id, newFragment)
+                                                        addToBackStack(null)
+
+                                                    }.commit()
+                                                }
+                                            }
+
                                             llTujuanWisata.addView(infl)
                                         }
                                     }
@@ -241,9 +274,6 @@ class TransaksiFragment : Fragment() {
                                 else -> {}
                             }
                         }
-
-
-
                     }
                     is Response.Failure -> {
                         requireContext().makeToast("Error mengambil transaksi: " + response.errorMessage)
@@ -261,28 +291,12 @@ class TransaksiFragment : Fragment() {
             findNavController().navigate(R.id.action_transaksiFragment_to_lihatLokasiFragment)
         }
 
-        val layoutDetail = binding.layoutDetailPemesanan
-        layoutDetail.isDrawingCacheEnabled = true
-        val bitmapp = layoutDetail.drawingCache
         binding.btnUnduhBukti.setOnClickListener {
             binding.lihatPeta.visibility = View.GONE
             val viewBitmap = getBitmapFromView(binding.layoutDetailPemesanan)
             saveBitmapToPicturesDirectory(requireContext(), viewBitmap, fileName)
             binding.lihatPeta.visibility = View.VISIBLE
         }
-    }
-
-    private fun buildUiKit() {
-        SdkUIFlowBuilder.init().apply {
-            setClientKey("SB-Mid-client-9ISWkdD18OTVrVhh")
-            setContext(requireActivity())
-            setTransactionFinishedCallback { result ->
-                Toast.makeText(requireContext(), "Transaction Result: " + result.status, Toast.LENGTH_LONG).show()
-
-            }
-            setMerchantBaseUrl("https://kencana-admin.vercel.app/api/")
-            setColorTheme(CustomColorTheme("#" + Integer.toHexString(ContextCompat.getColor(requireContext(), R.color.md_theme_light_primary)), "#B61548", "#FFE51255"))
-        }.buildSDK()
 
     }
 
@@ -324,7 +338,6 @@ class TransaksiFragment : Fragment() {
                 outputStream.close()
             }
 
-            // Notify the MediaScanner to scan for the saved image
             if (imageUri != null) {
                 context.makeToast("Bukti Pemesanan Berhasil Disimpan ke Galeri")
                 MediaScannerConnection.scanFile(context, arrayOf(imageUri.path), arrayOf("image/jpeg"), null)
@@ -332,6 +345,74 @@ class TransaksiFragment : Fragment() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun bayarSekarang() {
+        if (dataPemesanan == null) {
+            return
+        }
+        if (dataPemesanan.payment_url != null && dataPemesanan.status == Status.PENDING) {
+            isProcessed = true
+            val intent = Intent(requireActivity(), ProsesTransaksiActivity::class.java)
+            intent.putExtra(IntentKey.PAYMENT_URL, dataPemesanan.payment_url)
+            startActivity(intent)
+            return
+        }
+        if(dataPemesanan.status == Status.DIPROSES){
+            buildUiKit()
+            val midtrans = MidtransSDK.getInstance()
+            val transactionRequest = TransactionRequest(dataPemesanan?.kode_pemesanan!!, dataPemesanan.total_bayar!!, "IDR")
+            val customerDetail = CustomerDetails()
+            customerDetail.customerIdentifier = dataPemesanan.user_id
+            customerDetail.firstName = dataPemesanan.user_nama
+            customerDetail.email = MyUser.user?.email
+            customerDetail.phone = dataPemesanan.user_no_telp
+
+            val billingAddress = BillingAddress()
+            billingAddress.address = "";
+            billingAddress.city = "";
+            billingAddress.postalCode = "";
+            customerDetail.billingAddress = billingAddress
+
+            val shippingAddress = ShippingAddress()
+            shippingAddress.address = ""
+            shippingAddress.city = ""
+            shippingAddress.postalCode = ""
+            customerDetail.shippingAddress = shippingAddress
+
+            transactionRequest.customerDetails = customerDetail
+
+            // item details
+            val namaProdukPaket = "${dataPemesanan?.paket_wisata_nama} (${dataPemesanan?.jenis_kendaraan_nama})"
+            val itemDetails = arrayListOf<ItemDetails>()
+            itemDetails.add(ItemDetails(dataPemesanan.produk_id, dataPemesanan.produk_harga!!, 1, namaProdukPaket))
+            if (dataPemesanan.promo_potongan > 0.0) {
+                val namaPromo =  "Diskon Promo"
+                itemDetails.add(ItemDetails(dataPemesanan.id+"PROMO", -dataPemesanan.promo_potongan!!, 1, namaPromo))
+            }
+            transactionRequest.itemDetails = itemDetails
+
+            // set sdk
+            midtrans.transactionRequest = transactionRequest
+
+            // buka transaction
+            midtrans.startPaymentUiFlow(requireActivity())
+        }
+
+    }
+
+    private fun buildUiKit() {
+        SdkUIFlowBuilder.init()
+            .setClientKey("SB-Mid-client-9ISWkdD18OTVrVhh")
+            .setContext(requireActivity())
+            .setTransactionFinishedCallback { result ->
+                isProcessed = true
+            }
+            .setMerchantBaseUrl("https://kencana-admin.vercel.app/api/")
+            .setColorTheme(CustomColorTheme("#" + Integer.toHexString(ContextCompat.getColor(requireActivity(), R.color.md_theme_light_primary)), "#B61548", "#FFE51255"))
+            .setLanguage("id")
+            .buildSDK()
+
     }
 
 }

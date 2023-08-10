@@ -1,4 +1,4 @@
-package com.uty.travelersapp.fragments
+package com.uty.travelersapp.fragments.dashboard
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter

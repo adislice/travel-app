@@ -1,4 +1,4 @@
-package com.uty.travelersapp.fragments
+package com.uty.travelersapp.fragments.dashboard
 
 import android.Manifest
 import android.content.Intent
@@ -21,13 +21,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.switchMap
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import coil.load
-import com.bumptech.glide.Glide
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -151,18 +148,14 @@ class HomeFragment : Fragment() {
 
         tempatWisataViewPager.autoScroll(viewLifecycleOwner.lifecycleScope, HomeCarouselWisataAdapter.REFRESH_RATE_SECONDS)
 
-        // paket wisata item
-//        homePaketAdapter = HomePaketWisataAdapter(requireContext())
-//        val lvPaket = binding.lvHomePaketwisata
-//        lvPaket.adapter = homePaketAdapter
-
         val llPaketWisata = binding.llHomePaketwisata
 
         paketWisataViewModel.homePaketWisata.observe(viewLifecycleOwner) { response ->
             llPaketWisata.removeAllViews()
             llPaketWisata.invalidate()
+            var newResponse = response.take(5)
 
-            response.forEach { item ->
+            newResponse.forEach { item ->
                 val itemView = View.inflate(requireActivity(), R.layout.item_home_paketwisata, null)
                 itemView.setOnClickListener {
                     val intent = Intent(requireActivity(), PaketWisataBaseActivity::class.java)
@@ -245,7 +238,7 @@ class HomeFragment : Fragment() {
             return
         }
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            val locAddress = Helper.getLocationAddress(requireActivity(), location.latitude, location.longitude)
+            val locAddress = Helper.getLocalityName(requireActivity(), location.latitude, location.longitude)
             locAddress?.let {addres ->
                 binding.txtLocationName.text = addres.locality
                 binding.imgLocationIcon.visibility = View.VISIBLE

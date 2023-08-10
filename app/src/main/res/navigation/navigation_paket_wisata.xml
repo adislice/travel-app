@@ -87,6 +87,13 @@
             app:exitAnim="@anim/slide_exit"
             app:popEnterAnim="@anim/slide_pop_enter"
             app:popExitAnim="@anim/slide_pop_exit"/>
+        <action
+            android:id="@+id/action_transaksiFragment_to_prakiraanCuacaFragment"
+            app:destination="@id/prakiraanCuacaFragment"
+            app:enterAnim="@anim/slide_enter"
+            app:exitAnim="@anim/slide_exit"
+            app:popEnterAnim="@anim/slide_pop_enter"
+            app:popExitAnim="@anim/slide_pop_exit"/>
     </fragment>
     <fragment
         android:id="@+id/lihatLokasiFragment"
@@ -95,4 +102,9 @@
         tools:layout="@layout/fragment_lihat_lokasi" >
 
     </fragment>
+    <fragment
+        android:id="@+id/prakiraanCuacaFragment"
+        android:name="com.uty.travelersapp.fragments.PrakiraanCuacaFragment"
+        android:label="fragment_prakiraan_cuaca"
+        tools:layout="@layout/fragment_prakiraan_cuaca" />
 </navigation>

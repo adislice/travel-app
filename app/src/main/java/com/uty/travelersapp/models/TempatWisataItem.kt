@@ -4,7 +4,7 @@ import com.google.firebase.firestore.DocumentId
 import java.io.Serializable
 
 data class TempatWisataItem(
-    @DocumentId var id: String? = null,
+    var id: String? = null,
     val nama: String? = null,
     val alamat: String? = null,
     val kota: String? = null,

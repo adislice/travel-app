@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -27,6 +28,8 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.PolygonOptions
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.maps.android.SphericalUtil
 import com.uty.travelersapp.R
 import com.uty.travelersapp.databinding.FragmentLihatLokasiBinding
@@ -41,7 +44,7 @@ class LihatLokasiFragment : Fragment() {
     private lateinit var gMap: GoogleMap
     private var lokasiList: ArrayList<DaftarLokasi>? = null
     private var markerList = arrayListOf<Marker>()
-    private var polygonList = arrayListOf<Polygon>()
+    private var polylineList = arrayListOf<Polyline>()
     private var markerColors = arrayOf(
         Color.parseColor("#B3424242"),
         Color.parseColor("#B3F44336"), // red
@@ -72,10 +75,15 @@ class LihatLokasiFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.toolbarLocationPicker.navigationIcon = ContextCompat.getDrawable(requireActivity(), R.drawable.outline_arrow_back_24)
+        binding.toolbarLocationPicker.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_lihat_lokasi) as SupportMapFragment?
 
         alurPemesananViewModel.lokasiList.observe(viewLifecycleOwner) {
-            requireActivity().makeToast("lok: " + it.toString())
+//            requireActivity().makeToast("lok: " + it.toString())
             lokasiList?.clear()
             lokasiList = it
             mapFragment?.getMapAsync(callback)
@@ -138,67 +146,13 @@ class LihatLokasiFragment : Fragment() {
 
 
     fun drawCurveOnMap(latLng1: LatLng, latLng2: LatLng, k: Double) {
+        val polyline = gMap.addPolyline(
+            PolylineOptions()
+            .add(latLng1, latLng2)
+            .color(Color.parseColor("#99000000")))
 
-        //curve radius
-        var colorInt = Color.parseColor("#1E88E5")
-        var h = SphericalUtil.computeHeading(latLng1, latLng2)
-        var d = 0.0
-        val p: LatLng?
-
-        //The if..else block is for swapping the heading, offset and distance
-        //to draw curve always in the upward direction
-        if (h < 0) {
-            d = SphericalUtil.computeDistanceBetween(latLng2, latLng1)
-            h = SphericalUtil.computeHeading(latLng2, latLng1)
-            //Midpoint position
-            p = SphericalUtil.computeOffset(latLng2, d * 0.5, h)
-        } else {
-            d = SphericalUtil.computeDistanceBetween(latLng1, latLng2)
-
-            //Midpoint position
-            p = SphericalUtil.computeOffset(latLng1, d * 0.5, h)
-        }
-
-        //Apply some mathematics to calculate position of the circle center
-        val x = (1 - k * k) * d * 0.5 / (2 * k)
-        val r = (1 + k * k) * d * 0.5 / (2 * k)
-
-        val c = SphericalUtil.computeOffset(p, x, h + 90.0)
-
-        //Calculate heading between circle center and two points
-        val h1 = SphericalUtil.computeHeading(c, latLng1)
-        val h2 = SphericalUtil.computeHeading(c, latLng2)
-
-        //Calculate positions of points on circle border and add them to polyline options
-        val numberOfPoints = 1000 //more numberOfPoints more smooth curve you will get
-        val step = (h2 - h1) / numberOfPoints
-
-        //Create PolygonOptions object to draw on map
-        val polygon = PolygonOptions()
-
-        //Create a temporary list of LatLng to store the points that's being drawn on map for curve
-        val temp = arrayListOf<LatLng>()
-
-        //iterate the numberOfPoints and add the LatLng to PolygonOptions to draw curve
-        //and save in temp list to add again reversely in PolygonOptions
-        for (i in 0 until numberOfPoints) {
-            val latlng = SphericalUtil.computeOffset(c, r, h1 + i * step)
-            polygon.add(latlng) //Adding in PolygonOptions
-            temp.add(latlng)    //Storing in temp list to add again in reverse order
-        }
-
-        //iterate the temp list in reverse order and add in PolygonOptions
-        for (i in (temp.size - 1) downTo 1) {
-            polygon.add(temp[i])
-        }
-
-        polygon.strokeColor(colorInt)
-        polygon.strokeWidth(12f)
-//        polygon.strokePattern(listOf(Dash(30f), Gap(50f))) //Skip if you want solid line
-        val result = gMap.addPolygon(polygon)
-        polygonList.add(result)
-
-        temp.clear() //clear the temp list
+        polylineList.add(polyline)
+        return
     }
 
     private fun getMarkerIconFromDrawable(drawable: Drawable): BitmapDescriptor? {

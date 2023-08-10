@@ -9,17 +9,13 @@ tools:context=".fragments.LihatLokasiFragment">
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:background="#E6FFFFFF"
-        style="@style/Widget.Material3.AppBarLayout"
         app:liftOnScroll="false">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar_location_picker"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Peta Perjalanan"
-            style="@style/Widget.Material3.Toolbar"
-            app:titleTextColor="@color/md_theme_light_onSurface"/>
+            app:title="Peta Perjalanan" />
 
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -53,6 +49,7 @@ tools:context=".fragments.LihatLokasiFragment">
             app:cardBackgroundColor="@color/white"
             app:cardElevation="8dp"
             app:strokeWidth="0dp"
+            android:visibility="gone"
             app:strokeColor="@android:color/transparent"
             android:layout_margin="20dp">
             <LinearLayout

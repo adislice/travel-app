@@ -4,7 +4,10 @@ import android.content.Context
 import android.content.res.Resources
 import android.location.Location
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.uty.travelersapp.models.UserModel
@@ -13,6 +16,22 @@ class Helpers {
     companion object {
         fun Context.makeToast(message: CharSequence) {
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        }
+
+        fun ViewGroup.fixBottomInsets() {
+            ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+                val pb = insets.bottom
+                view.setPadding(
+                    view.paddingLeft,
+                    view.paddingTop,
+                    view.paddingRight,
+                    pb
+                )
+
+                WindowInsetsCompat.CONSUMED
+            }
         }
 
         fun snackbarDismiss(message: CharSequence, view: View, anchor: View? = null) {

@@ -29,7 +29,7 @@ class LaunchFragment : Fragment() {
         val btnLogin = view.findViewById<Button>(R.id.btn_login_user)
 
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
-        toolbar.inflateMenu(R.menu.menu_launch)
+//        toolbar.inflateMenu(R.menu.menu_launch)
 
         btnLogin.setOnClickListener {
             findNavController().navigate(R.id.action_launchFragment_to_loginFragment)

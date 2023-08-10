@@ -14,6 +14,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -28,6 +29,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.appbar.MaterialToolbar
 import com.uty.travelersapp.utils.Helper
 import com.uty.travelersapp.utils.PermissionUtils
 import com.uty.travelersapp.viewmodel.AlurPemesananViewModel
@@ -98,6 +100,11 @@ class LocationPickerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val toolbar = view.findViewById<MaterialToolbar>(R.id.toolbar_picker)
+        toolbar.navigationIcon = ContextCompat.getDrawable(requireActivity(), R.drawable.outline_arrow_back_24)
+        toolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_picker) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
