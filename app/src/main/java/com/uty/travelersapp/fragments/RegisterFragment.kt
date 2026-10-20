@@ -81,6 +81,10 @@ class RegisterFragment : Fragment() {
         binding.btnRegisterGaskan.setOnClickListener {
             createAccount()
         }
+
+        binding.btnPrivacyPolicy.setOnClickListener {
+            startActivity(android.content.Intent(requireContext(), com.uty.travelersapp.PrivacyPolicyActivity::class.java))
+        }
     }
 
     fun createAccount() {
