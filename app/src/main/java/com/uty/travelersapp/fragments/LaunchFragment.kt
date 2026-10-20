@@ -38,5 +38,8 @@ class LaunchFragment : Fragment() {
         btnRegister.setOnClickListener {
             findNavController().navigate(R.id.action_launchFragment_to_registerFragment)
         }
+        view.findViewById<View>(R.id.btn_about_app).setOnClickListener {
+            AboutAppBottomSheet().show(parentFragmentManager, "aboutAppBottomSheet")
+        }
     }
 }
